@@ -228,6 +228,9 @@ struct GTY(()) function {
   /* GIMPLE body for this function.  */
   gimple_seq gimple_body;
 
+  /* GIMPLEFE Passes */
+  gimple_opt_pass *custom_pass_list;
+
   /* SSA and dataflow information.  */
   struct gimple_df *gimple_df;
 

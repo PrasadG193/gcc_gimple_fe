@@ -104,6 +104,9 @@ enum rid
   RID_DFLOAT32, RID_DFLOAT64, RID_DFLOAT128,
   RID_FRACT, RID_ACCUM, RID_AUTO_TYPE, RID_BUILTIN_CALL_WITH_STATIC_CHAIN,
 
+  /* "__GIMPLE", for the GIMPLE-parsing extension to the C frontend. */
+  RID_GIMPLE,
+
   /* C11 */
   RID_ALIGNAS, RID_GENERIC,
 

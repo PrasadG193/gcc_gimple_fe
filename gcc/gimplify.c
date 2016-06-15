@@ -11678,7 +11678,10 @@ gimplify_function_tree (tree fndecl)
       && !needs_to_live_in_memory (ret))
     DECL_GIMPLE_REG_P (ret) = 1;
 
-  bind = gimplify_body (fndecl, true);
+  if (!cfun->gimple_body)
+    bind = gimplify_body (fndecl, true);
+  else
+    bind = NULL;
 
   /* The tree body of the function is no longer needed, replace it
      with the new GIMPLE body.  */
