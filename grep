@@ -1,0 +1,753 @@
+gcc/asan.c:  g = gimple_build_assign (make_ssa_name (uintptr_type), RSHIFT_EXPR,
+gcc/asan.c:  g = gimple_build_assign (make_ssa_name (uintptr_type), PLUS_EXPR,
+gcc/asan.c:  g = gimple_build_assign (make_ssa_name (shadow_ptr_type), NOP_EXPR,
+gcc/asan.c:  g = gimple_build_assign (make_ssa_name (shadow_type), MEM_REF, t);
+gcc/asan.c:  gimple *g = gimple_build_assign (make_ssa_name (TREE_TYPE (base)),
+gcc/asan.c:  gimple *g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/asan.c:      gimple *g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/asan.c:	  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/asan.c:  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/asan.c:	  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/asan.c:	  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/cgraph.c:	  gimple *set_stmt = gimple_build_assign (lhs, var);
+gcc/cgraphunit.c:      stmt = gimple_build_assign
+gcc/cgraphunit.c:      stmt = gimple_build_assign (vtabletmp,
+gcc/cgraphunit.c:      stmt = gimple_build_assign (vtabletmp2,
+gcc/cgraphunit.c:      stmt = gimple_build_assign (vtabletmp2,
+gcc/cgraphunit.c:      stmt = gimple_build_assign (vtabletmp3,
+gcc/cgraphunit.c:          stmt = gimple_build_assign (ptrtmp, ptr);
+gcc/cgraphunit.c:  stmt = gimple_build_assign (ret, ptr);
+gcc/cgraphunit.c:		gimple *stmt = gimple_build_assign (tmp, arg);
+gcc/cgraphunit.c:		  stmt = gimple_build_assign (restmp,
+gcc/ChangeLog:	* gimple.c (gimple_build_assign, gimple_assign_set_rhs_from_tree):
+gcc/ChangeLog-2010:	(gimple_build_assign_stat): Support operations with three operands.
+gcc/ChangeLog-2010:	(gimple_build_assign_with_ops_stat): Likewise.
+gcc/ChangeLog-2010:	(gimple_build_assign_with_ops): Pass NULL for last operand.
+gcc/ChangeLog-2010:	(gimple_build_assign_with_ops3): New macro.
+gcc/ChangeLog-2011:	gimple_build_assign_with_ops.
+gcc/ChangeLog-2012:	* gimple.h (gimple_build_assign_with_ops_stat,
+gcc/ChangeLog-2012:	gimple_build_assign_with_ops, gimple_build_assign_with_ops3):
+gcc/ChangeLog-2012:	Turn into an overload of the function gimple_build_assign_with_ops.
+gcc/ChangeLog-2012:	* gimple.c (gimple_build_assign_with_ops_stat): Rename to ...
+gcc/ChangeLog-2012:	(gimple_build_assign_with_ops): ... this.
+gcc/ChangeLog-2013:	unshare_expr (id->retval) before passing it to gimple_build_assign.
+gcc/ChangeLog-2014:	(gimple_build_asm, gimple gimple_build_assign_with_ops)
+gcc/ChangeLog-2014:	(gimple_build_assign, gimple_build_bind, gimple_build_call,
+gcc/ChangeLog-2014:	* doc/gimple.texi (gimple_build_assign_with_ops): Remove.
+gcc/ChangeLog-2014:	(gimple_build_assign): Document the new overloads.
+gcc/ChangeLog-2014:	gimple_build_assign instead of gimple_build_assign_with_ops and swap
+gcc/ChangeLog-2014:	* gimple.h (gimple_build_assign_stat): Remove prototype.
+gcc/ChangeLog-2014:	(gimple_build_assign): Remove define.  Add overload prototypes
+gcc/ChangeLog-2014:	* gimple.c (gimple_build_assign_stat): Renamed to...
+gcc/ChangeLog-2014:	(gimple_build_assign): ... this.  Add overloads with
+gcc/ChangeLog-2014:	(gimple_build_assign_with_ops): Remove 1 and 2 operand overloads.
+gcc/ChangeLog-2014:	(gimple_build_assign_1): ... this.  Make it static inline.
+gcc/ChangeLog-2014:	* tree-ssa-strlen.c (get_string_length): Use gimple_build_assign
+gcc/ChangeLog-2014:	instead of gimple_build_assign_with_ops, swap the order of first
+gcc/ChangeLog-2014:	(gimple_build_assign_stat): Strengthen return type from gimple to
+gcc/ChangeLog-2014:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog-2014:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog-2014:	(gimple_build_assign_stat): Return a gassign *.
+gcc/ChangeLog-2014:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog-2014:	* gimple.h (gimple_build_assign_with_ops): Add unary arg overload.
+gcc/ChangeLog-2014:	* gimple.c (gimple_build_assign_with_ops): New unary arg overload.
+gcc/ChangeLog-2014:	from gimple_build_assign_with_ops call.
+gcc/ChangeLog-2014:	argument from gimple_build_assign_with_ops call.
+gcc/ChangeLog-2014:	last NULL argument from gimple_build_assign_with_ops call.
+gcc/ChangeLog-2014:	Remove last NULL argument from gimple_build_assign_with_ops call.
+gcc/ChangeLog-2014:	from gimple_build_assign_with_ops call.
+gcc/ChangeLog-2014:	gimple_build_assign_with_ops call.
+gcc/ChangeLog-2015:	* gimple.h (gimple_build_assign): Rename CXX_MEM_STAT_DECL to
+gcc/ChangeLog.gimple-classes:	* gimple.c (gimple_build_assign_with_ops): Strengthen return type
+gcc/ChangeLog.gimple-classes:	(gimple_build_assign_stat): Likewise.
+gcc/ChangeLog.gimple-classes:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog.gimple-classes:	(gimple_build_assign_stat): Likewise.
+gcc/ChangeLog.gimple-classes:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog.gimple-classes:	* gimple.c (gimple_build_assign_stat): Likewise.
+gcc/ChangeLog.gimple-classes:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog.gimple-classes:	* gimple.h (gimple_build_assign_stat): Likewise.
+gcc/ChangeLog.gimple-classes:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog.tuples:	(gimple_build_assign): Likewise.
+gcc/ChangeLog.tuples:	(gimple_build_assign_with_ops): Likewise.
+gcc/ChangeLog.tuples:	* gimple.h (gimple_build_assign, gimple_build_assign_with_ops):
+gcc/ChangeLog.tuples:	and caller.  Fix a bug in a call to gimple_build_assign_with_ops.
+gcc/ChangeLog.tuples:	* gimple.c (gimple_build_assign_with_ops): Don't set SSA_NAME_DEF_STMT.
+gcc/ChangeLog.tuples:	(gimple_build_assign_with_ops): If the LHS is an
+gcc/ChangeLog.tuples:	(gimple_build_assign): Rename from build_gimple_assign.
+gcc/ChangeLog.tuples:	(gimple_build_assign_with_ops): Rename from
+gcc/ChangeLog.tuples:	(build_gimple_assign): Rename from gimple_build_assign.
+gcc/ChangeLog.tuples:	(gimple_build_return, gimple_build_call_1, gimple_build_assign,
+gcc/config/aarch64/aarch64-builtins.c:	        new_stmt = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/aarch64/aarch64-builtins.c:		new_stmt = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/aarch64/aarch64-builtins.c:		new_stmt = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/aarch64/aarch64-builtins.c:				gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/aarch64/aarch64-builtins.c:			      gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/aarch64/aarch64-builtins.c:			      gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/alpha/alpha.c:	      new_stmt = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/config/i386/i386.c:  convert_stmt = gimple_build_assign (result_var, convert_expr); 
+gcc/config/i386/i386.c:	  assign_stmt = gimple_build_assign (and_expr_var,
+gcc/doc/gimple.texi:@deftypefn {GIMPLE function} gassign *gimple_build_assign (tree lhs, tree rhs)
+gcc/doc/gimple.texi:@code{gimple_build_assign} with @code{enum tree_code} argument and separate
+gcc/doc/gimple.texi:@deftypefn {GIMPLE function} gassign *gimple_build_assign @
+gcc/doc/gimple.texi:This function is similar to two operand @code{gimple_build_assign},
+gcc/doc/gimple.texi:@deftypefn {GIMPLE function} gassign *gimple_build_assign @
+gcc/doc/gimple.texi:Like the above 5 operand @code{gimple_build_assign}, but with the last
+gcc/doc/gimple.texi:@deftypefn {GIMPLE function} gassign *gimple_build_assign @
+gcc/doc/gimple.texi:Like the above 4 operand @code{gimple_build_assign}, but with the last
+gcc/gimple-builder.c:  return gimple_build_assign (lhs, code, op1, op2);
+gcc/gimple-builder.c:  return gimple_build_assign (lhs, code, op1, op2);
+gcc/gimple-builder.c:  return gimple_build_assign (lhs, NOP_EXPR, op);
+gcc/gimple.c:gimple_build_assign (tree lhs, tree rhs MEM_STAT_DECL)
+gcc/gimple.c:  return gimple_build_assign (lhs, subcode, op1, op2, op3 PASS_MEM_STAT);
+gcc/gimple.c:gimple_build_assign_1 (tree lhs, enum tree_code subcode, tree op1,
+gcc/gimple.c:gimple_build_assign (tree lhs, enum tree_code subcode, tree op1,
+gcc/gimple.c:  return gimple_build_assign_1 (lhs, subcode, op1, op2, op3 PASS_MEM_STAT);
+gcc/gimple.c:gimple_build_assign (tree lhs, enum tree_code subcode, tree op1,
+gcc/gimple.c:  return gimple_build_assign_1 (lhs, subcode, op1, op2, NULL_TREE
+gcc/gimple.c:gimple_build_assign (tree lhs, enum tree_code subcode, tree op1 MEM_STAT_DECL)
+gcc/gimple.c:  return gimple_build_assign_1 (lhs, subcode, op1, NULL_TREE, NULL_TREE
+gcc/gimple-fold.c:      new_stmt = gimple_build_assign (lhs, tmp);
+gcc/gimple-fold.c:      repl = gimple_build_assign (lhs, val);
+gcc/gimple-fold.c:	repl = gimple_build_assign (gimple_call_lhs (stmt), dest);
+gcc/gimple-fold.c:			  new_stmt = gimple_build_assign (NULL_TREE, srcmem);
+gcc/gimple-fold.c:			= gimple_build_assign (fold_build2 (MEM_REF, desttype,
+gcc/gimple-fold.c:	  new_stmt = gimple_build_assign (NULL_TREE, srcvar);
+gcc/gimple-fold.c:      new_stmt = gimple_build_assign (destvar, srcvar);
+gcc/gimple-fold.c:  gimple *repl = gimple_build_assign (lhs, dest);
+gcc/gimple-fold.c:  gimple *store = gimple_build_assign (var, build_int_cst_type (etype, cval));
+gcc/gimple-fold.c:      gimple *asgn = gimple_build_assign (gimple_call_lhs (stmt), dest);
+gcc/gimple-fold.c:      repl = gimple_build_assign (gimple_call_lhs (stmt), dst);
+gcc/gimple-fold.c:  gassign *ret = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/gimple-fold.c:	  repl = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/gimple-fold.c:	  repl = gimple_build_assign (gimple_call_lhs (stmt), orig_len);
+gcc/gimple-fold.c:	  repl = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/gimple-fold.c:	  repl = gimple_build_assign (gimple_call_lhs (stmt), orig_len);
+gcc/gimple-fold.c:  gimple *host_ass = gimple_build_assign
+gcc/gimple-fold.c:  gimple *dev_ass = gimple_build_assign
+gcc/gimple-fold.c:  gimple *result_ass = gimple_build_assign
+gcc/gimple-fold.c:			  gimple *new_stmt = gimple_build_assign (lhs, def);
+gcc/gimple-fold.c:  gimple *cvt = gimple_build_assign (lhs, NOP_EXPR, gimple_assign_lhs (stmt));
+gcc/gimple-fold.c:	stmt = gimple_build_assign (res, code, build1 (code, type, op0));
+gcc/gimple-fold.c:	stmt = gimple_build_assign (res, code, op0);
+gcc/gimple-fold.c:      gimple *stmt = gimple_build_assign (res, code, op0, op1);
+gcc/gimple-fold.c:	stmt = gimple_build_assign (res, code,
+gcc/gimple-fold.c:	stmt = gimple_build_assign (res, code, op0, op1, op2);
+gcc/gimple.h:gassign *gimple_build_assign (tree, tree CXX_MEM_STAT_INFO);
+gcc/gimple.h:gassign *gimple_build_assign (tree, enum tree_code,
+gcc/gimple.h:gassign *gimple_build_assign (tree, enum tree_code,
+gcc/gimple.h:gassign *gimple_build_assign (tree, enum tree_code, tree CXX_MEM_STAT_INFO);
+gcc/gimple-laddress.c:	      gimple *g = gimple_build_assign (gimple_assign_lhs (stmt),
+gcc/gimple-low.c:      g = gimple_build_assign (dest, build_zero_cst (TREE_TYPE (dest)));
+gcc/gimple-low.c:      g = gimple_build_assign (dest, fold_convert_loc (loc, TREE_TYPE (dest),
+gcc/gimple-low.c:      g = gimple_build_assign (orig_dest, dest);
+gcc/gimple-low.c:      stmt = gimple_build_assign (ptr, tem);
+gcc/gimple-low.c:    stmt = gimple_build_assign (ptr,
+gcc/gimple-low.c:  stmt = gimple_build_assign (fold_build2 (MEM_REF, ptr_type_node, pptr,
+gcc/gimple-match-head.c:      gimple *new_stmt = gimple_build_assign (res, rcode,
+gcc/gimple-ssa-strength-reduction.c:	  gassign *copy_stmt = gimple_build_assign (lhs, basis_name);
+gcc/gimple-ssa-strength-reduction.c:      new_stmt = gimple_build_assign (lhs, code, basis_name, bump_tree);
+gcc/gimple-ssa-strength-reduction.c:	  new_stmt = gimple_build_assign (lhs, code, basis_name,
+gcc/gimple-ssa-strength-reduction.c:	new_stmt = gimple_build_assign (lhs, PLUS_EXPR, basis_name, c->stride);
+gcc/gimple-ssa-strength-reduction.c:	new_stmt = gimple_build_assign (lhs, MINUS_EXPR, basis_name,
+gcc/gimple-ssa-strength-reduction.c:      init_stmt = gimple_build_assign (new_name, MULT_EXPR,
+gcc/gimple-ssa-strength-reduction.c:  cast_stmt = gimple_build_assign (cast_lhs, NOP_EXPR, from_expr);
+gcc/gimple-ssa-strength-reduction.c:	  gassign *copy_stmt = gimple_build_assign (lhs, basis_name);
+gcc/gimple-ssa-strength-reduction.c:	  gassign *cast_stmt = gimple_build_assign (lhs, NOP_EXPR, basis_name);
+gcc/gimplify.c:	  clobber_stmt = gimple_build_assign (t, clobber);
+gcc/gimplify.c:  gimplify_seq_add_stmt (pre_p, gimple_build_assign (var, lower));
+gcc/gimplify.c:    gimplify_seq_add_stmt (pre_p, gimple_build_assign (cref, value));
+gcc/gimplify.c:  gimplify_seq_add_stmt (pre_p, gimple_build_assign (var, tmp));
+gcc/gimplify.c:	  gassign *init = gimple_build_assign (lhs, rhs);
+gcc/gimplify.c:  gimplify_seq_add_stmt (pre_p, gimple_build_assign (lhs, new_rhs));
+gcc/gimplify.c:      gimplify_seq_add_stmt (pre_p, gimple_build_assign (*to_p, *from_p));
+gcc/gimplify.c:      assign = gimple_build_assign (*to_p, *from_p);
+gcc/gimplify.c:      gassign *ffalse = gimple_build_assign (flag, boolean_false_node);
+gcc/gimplify.c:      gassign *ftrue = gimple_build_assign (flag, boolean_true_node);
+gcc/gimplify.c:	  gimplify_seq_add_stmt (&for_body, gimple_build_assign (decl, var));
+gcc/gimplify-me.c:	      post_stmt = gimple_build_assign (lhs, temp);
+gcc/hsa-gen.c:		gimple *assign1 = gimple_build_assign (tmp1, LE_EXPR, low,
+gcc/hsa-gen.c:		gimple *assign2 = gimple_build_assign (tmp2, LE_EXPR, index,
+gcc/hsa-gen.c:		gimple *assign3 = gimple_build_assign (tmp3, BIT_AND_EXPR, tmp1,
+gcc/hsa-gen.c:	      gassign *assign = gimple_build_assign (lhs, COMPLEX_EXPR,
+gcc/ipa-prop.c:		  gimple *tem = gimple_build_assign (NULL_TREE, expr);
+gcc/ipa-split.c:		      cpy = gimple_build_assign (retval, NOP_EXPR, tem);
+gcc/ipa-split.c:		    = gimple_build_assign (make_ssa_name (TREE_TYPE (retval)),
+gcc/omp-low.c:		= gimple_build_assign (y1, POINTER_PLUS_EXPR, y1,
+gcc/omp-low.c:		  g = gimple_build_assign (y3, POINTER_PLUS_EXPR, y3,
+gcc/omp-low.c:	      g = gimple_build_assign (i, PLUS_EXPR, i,
+gcc/omp-low.c:		  g = gimple_build_assign (y2, POINTER_PLUS_EXPR, y2,
+gcc/omp-low.c:		      g = gimple_build_assign
+gcc/omp-low.c:		  g = gimple_build_assign (i2, PLUS_EXPR, i2,
+gcc/omp-low.c:			    = gimple_build_assign (unshare_expr (lvar), iv);
+gcc/omp-low.c:			  g = gimple_build_assign (iv, code, iv, t);
+gcc/omp-low.c:      g = gimple_build_assign (lane, INTEGER_CST,
+gcc/omp-low.c:	    g = gimple_build_assign (idx, INTEGER_CST, t);
+gcc/omp-low.c:	    g = gimple_build_assign (idx, PLUS_EXPR, idx, t);
+gcc/omp-low.c:	  gimple *g = gimple_build_assign (new_var, POINTER_PLUS_EXPR, new_var,
+gcc/omp-low.c:	  g = gimple_build_assign (ref, POINTER_PLUS_EXPR, ref,
+gcc/omp-low.c:	  g = gimple_build_assign (i, PLUS_EXPR, i,
+gcc/omp-low.c:  gimple_seq_add_stmt (head, gimple_build_assign (ddvar, integer_zero_node));
+gcc/omp-low.c:  gimple *stmt = gimple_build_assign (to, from);
+gcc/omp-low.c:      gassign *ass = gimple_build_assign (loop->v, expr);
+gcc/omp-low.c:		assign_stmt = gimple_build_assign (fd->loop.n2,
+gcc/omp-low.c:		    = gimple_build_assign (counts[i], build_zero_cst (type));
+gcc/omp-low.c:	      gassign *stmt = gimple_build_assign (tem, t);
+gcc/omp-low.c:  gassign *stmt = gimple_build_assign (tem, startvar);
+gcc/omp-low.c:      stmt = gimple_build_assign (fd->loops[i].v, t);
+gcc/omp-low.c:	  stmt = gimple_build_assign (tem, t);
+gcc/omp-low.c:	  stmt = gimple_build_assign (fd->loops[i + 1].v, t);
+gcc/omp-low.c:      stmt = gimple_build_assign (fd->loops[i].v, t);
+gcc/omp-low.c:      gsi_insert_before (&gsi, gimple_build_assign (arr, clobber),
+gcc/omp-low.c:  assign_stmt = gimple_build_assign (startvar, t);
+gcc/omp-low.c:      assign_stmt = gimple_build_assign (endvar, iend);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, iend);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, NOP_EXPR, iend);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (dest, t);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (vback, t);
+gcc/omp-low.c:      gsi_insert_after (&gsi, gimple_build_assign (arr, clobber),
+gcc/omp-low.c:  gsi_insert_before (&gsi, gimple_build_assign (q, t), GSI_SAME_STMT);
+gcc/omp-low.c:  gsi_insert_before (&gsi, gimple_build_assign (tt, t), GSI_SAME_STMT);
+gcc/omp-low.c:  gsi_insert_before (&gsi, gimple_build_assign (tt, build_int_cst (itype, 0)),
+gcc/omp-low.c:    = gimple_build_assign (q, PLUS_EXPR, q, build_int_cst (itype, 1));
+gcc/omp-low.c:	      assign_stmt = gimple_build_assign (OMP_CLAUSE_DECL (innerc), t);
+gcc/omp-low.c:  assign_stmt = gimple_build_assign (startvar, t);
+gcc/omp-low.c:      assign_stmt = gimple_build_assign (endvar, e);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, e);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, NOP_EXPR, e);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (dest, t);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (vback, t);
+gcc/omp-low.c:    = gimple_build_assign (trip_init, build_int_cst (itype, 0));
+gcc/omp-low.c:	      assign_stmt = gimple_build_assign (OMP_CLAUSE_DECL (innerc), t);
+gcc/omp-low.c:  assign_stmt = gimple_build_assign (startvar, t);
+gcc/omp-low.c:      assign_stmt = gimple_build_assign (endvar, e);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, e);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, NOP_EXPR, e);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (dest, t);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (vback, t);
+gcc/omp-low.c:      assign_stmt = gimple_build_assign (trip_back, t);
+gcc/omp-low.c:  gimple *stmt = gimple_build_assign (ind_var, n1);
+gcc/omp-low.c:      stmt = gimple_build_assign (ind_var, PLUS_EXPR, ind_var,
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (OMP_CLAUSE_DECL (innerc), t);
+gcc/omp-low.c:  assign_stmt = gimple_build_assign (startvar, t0);
+gcc/omp-low.c:  assign_stmt = gimple_build_assign (endvar, t1);
+gcc/omp-low.c:  gimple *assign_stmt = gimple_build_assign (startvar, t);
+gcc/omp-low.c:      assign_stmt = gimple_build_assign (endvar, e);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, e);
+gcc/omp-low.c:	assign_stmt = gimple_build_assign (fd->loop.v, NOP_EXPR, e);
+gcc/omp-low.c:	  assign_stmt = gimple_build_assign (vback, t);
+gcc/omp-low.c:	  ass = gimple_build_assign (fd->loop.n2, total);
+gcc/omp-low.c:      ass = gimple_build_assign (chunk_no, expr);
+gcc/omp-low.c:      ass = gimple_build_assign (v, expr);
+gcc/omp-low.c:      ass = gimple_build_assign (offset_incr, expr);
+gcc/omp-low.c:	  ass = gimple_build_assign (chunk_no, expr);
+gcc/omp-low.c:      ass = gimple_build_assign (v, expr);
+gcc/omp-low.c:      stmt = gimple_build_assign (iaddr, iaddr_val);
+gcc/omp-low.c:		       gimple_build_assign (loadedi, initial),
+gcc/omp-low.c:	  stmt = gimple_build_assign (loaded_val, x);
+gcc/omp-low.c:      stmt = gimple_build_assign (old_vali, loadedi);
+gcc/omp-low.c:      stmt = gimple_build_assign (loadedi, new_storedi);
+gcc/omp-low.c:  stmt = gimple_build_assign (loaded_val, build_simple_mem_ref (addr));
+gcc/omp-low.c:  stmt = gimple_build_assign (build_simple_mem_ref (unshare_expr (addr)),
+gcc/omp-low.c:  gsi_insert_before (gsi, gimple_build_assign (ref, value), GSI_SAME_STMT);
+gcc/omp-low.c:  gsi_insert_before (gsi, gimple_build_assign (dimref, u32_one), GSI_SAME_STMT);
+gcc/omp-low.c:      gsi_insert_before (gsi, gimple_build_assign (ref, args[i]),
+gcc/omp-low.c:  gsi_insert_before (gsi, gimple_build_assign (ref, null_pointer_node),
+gcc/omp-low.c:      stmt = gimple_build_assign (tmp_var, device);
+gcc/omp-low.c:      stmt = gimple_build_assign (tmp_var,
+gcc/omp-low.c:  gassign *assign_stmt = gimple_build_assign (startvar, t);
+gcc/omp-low.c:      gsi_insert_after (&gsi, gimple_build_assign (ctx->sender_decl,
+gcc/omp-low.c:  g = gimple_build_assign (r, build_int_cst (ptr_type_node, n_in + n_out));
+gcc/omp-low.c:  g = gimple_build_assign (r, build_int_cst (ptr_type_node, n_out));
+gcc/omp-low.c:	    g = gimple_build_assign (r, t);
+gcc/omp-low.c:  g = gimple_build_assign (array, clobber);
+gcc/omp-low.c:      gimple_seq_add_stmt (&olist, gimple_build_assign (ctx->sender_decl,
+gcc/omp-low.c:	  		   gimple_build_assign (ctx->receiver_decl, t));
+gcc/omp-low.c:				 gimple_build_assign (TREE_VEC_ELT (t, i),
+gcc/omp-low.c:      gimple_seq_add_stmt (&olist, gimple_build_assign (ctx->sender_decl,
+gcc/omp-low.c:	  		   gimple_build_assign (ctx->receiver_decl, t));
+gcc/omp-low.c:					     gimple_build_assign (v, x));
+gcc/omp-low.c:					 gimple_build_assign (new_var, x));
+gcc/omp-low.c:					 gimple_build_assign (new_var, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:					     gimple_build_assign (v, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:					 gimple_build_assign (t, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:				     gimple_build_assign (new_pvar, x));
+gcc/omp-low.c:				     gimple_build_assign (new_var, x));
+gcc/omp-low.c:	  gimple_seq_add_stmt (&seq, gimple_build_assign (dst, src));
+gcc/omp-low.c:    gimple_seq_add_stmt (&seq, gimple_build_assign (lhs, var));
+gcc/omp-low.c:		gimple *ass = gimple_build_assign (gimple_call_lhs (call),
+gcc/omp-simd-clone.c:	  stmt = gimple_build_assign (make_ssa_name (TREE_TYPE (repl)), repl);
+gcc/omp-simd-clone.c:		    gimple *stmt = gimple_build_assign (name, new_decl);
+gcc/omp-simd-clone.c:	      stmt = gimple_build_assign (ref, retval);
+gcc/omp-simd-clone.c:      g = gimple_build_assign (make_ssa_name (TREE_TYPE (arg)), arg);
+gcc/omp-simd-clone.c:      g = gimple_build_assign (make_ssa_name (TREE_TYPE (TREE_TYPE (arg))),
+gcc/omp-simd-clone.c:      g = gimple_build_assign (make_ssa_name (addtype), NOP_EXPR, ret);
+gcc/omp-simd-clone.c:	  g = gimple_build_assign (make_ssa_name (addtype), MULT_EXPR,
+gcc/omp-simd-clone.c:  gimple *g = gimple_build_assign (iter2, PLUS_EXPR, iter1,
+gcc/omp-simd-clone.c:	      g = gimple_build_assign (idx, RSHIFT_EXPR, iter1,
+gcc/omp-simd-clone.c:	      g = gimple_build_assign (mask, aref);
+gcc/omp-simd-clone.c:	      g = gimple_build_assign (shift_cnt, BIT_AND_EXPR, iter1,
+gcc/omp-simd-clone.c:	  g = gimple_build_assign (make_ssa_name (TREE_TYPE (mask)),
+gcc/omp-simd-clone.c:	  g = gimple_build_assign (make_ssa_name (TREE_TYPE (mask)),
+gcc/omp-simd-clone.c:	  g = gimple_build_assign (mask, aref);
+gcc/omp-simd-clone.c:	      g = gimple_build_assign (mask, aref);
+gcc/omp-simd-clone.c:	g = gimple_build_assign (iter1, orig_arg);
+gcc/omp-simd-clone.c:	g = gimple_build_assign (orig_arg, iter1);
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (iter1, build_simple_mem_ref (def));
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (build_simple_mem_ref (def), iter1);
+gcc/omp-simd-clone.c:		g = gimple_build_assign (t, NOP_EXPR, gimple_call_lhs (g));
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (def, orig_arg);
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (iter2, code, iter1, addcst);
+gcc/omp-simd-clone.c:		g = gimple_build_assign (orig_arg, iter1);
+gcc/omp-simd-clone.c:	      = gimple_build_assign (iter3, build_simple_mem_ref (def));
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (iter2, POINTER_PLUS_EXPR, iter1,
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (iter5, code, iter4, addcst);
+gcc/omp-simd-clone.c:	    g = gimple_build_assign (build_simple_mem_ref (iter1), iter4);
+gcc/omp-simd-clone.c:		g = gimple_build_assign (v, aref);
+gcc/omp-simd-clone.c:		g = gimple_build_assign (build_simple_mem_ref (def), v);
+gcc/predict.c:			= gimple_build_assign (var, gimple_call_arg (stmt, 0));
+gcc/trans-mem.c:      stmt = gimple_build_assign (lp->save_var, unshare_expr (lp->addr));
+gcc/trans-mem.c:      stmt = gimple_build_assign (unshare_expr (lp->addr), lp->save_var);
+gcc/trans-mem.c:      g = gimple_build_assign (lhs, t);
+gcc/trans-mem.c:      g = gimple_build_assign (temp, t);
+gcc/trans-mem.c:	  gcall = gimple_build_assign (rtmp, rhs);
+gcc/trans-mem.c:	  gcall = gimple_build_assign (lhs, ltmp);
+gcc/trans-mem.c:      assign_stmt = gimple_build_assign (lhs, tmp);
+gcc/trans-mem.c:      gimple *stmt = gimple_build_assign (t1, BIT_AND_EXPR, tm_state, t2);
+gcc/trans-mem.c:      gimple *stmt = gimple_build_assign (t1, BIT_AND_EXPR, tm_state, t2);
+gcc/trans-mem.c:      gimple *stmt = gimple_build_assign (t1, BIT_AND_EXPR, tm_state, t2);
+gcc/trans-mem.c:  g2 = gimple_build_assign (callfn,
+gcc/trans-mem.c:      g2 = gimple_build_assign (lhs,
+gcc/tree-call-cdce.c:  stmt1 = gimple_build_assign (temp, arg);
+gcc/tree-call-cdce.c:  stmt2 = gimple_build_assign (tempc,
+gcc/tree-call-cdce.c:  stmt1 = gimple_build_assign (temp, base_val0);
+gcc/tree-cfg.c:      stmt = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/tree-cfg.c:	  stmt = gimple_build_assign (gimple_call_lhs (stmt),
+gcc/tree-cfg.c:	      gimple *s = gimple_build_assign (lhs, tmp);
+gcc/tree-cfg.c:		= gimple_build_assign (var, gimple_goto_dest (last));
+gcc/tree-cfg.c:	  copy = gimple_build_assign (def, use);
+gcc/tree-chkp.c:	  assign = gimple_build_assign (copy, bnd);
+gcc/tree-chkp.c:	  gimple *assign = gimple_build_assign (temp, elem);
+gcc/tree-chkp.c:      stmt = gimple_build_assign (zero_bounds, chkp_get_zero_bounds_var ());
+gcc/tree-chkp.c:      stmt = gimple_build_assign (none_bounds, chkp_get_none_bounds_var ());
+gcc/tree-chkp.c:	    stmt = gimple_build_assign (bounds, COND_EXPR, rhs1, bnd1, bnd2);
+gcc/tree-chkp.c:	    stmt = gimple_build_assign (bounds, COND_EXPR, cond, bnd1, bnd2);
+gcc/tree-chkp.c:      gimple *stmt = gimple_build_assign (chkp_get_tmp_reg (NULL), bounds);
+gcc/tree-chkp.c:      stmt = gimple_build_assign (size, COND_EXPR, cond, size_reloc, max_size);
+gcc/tree-chkp.c:      stmt = gimple_build_assign (size, size_reloc);
+gcc/tree-chkp.c:      stmt = gimple_build_assign (bounds, bnd_var);
+gcc/tree-chkp.c:      stmt = gimple_build_assign (bounds, bnd_var);
+gcc/tree-complex.c:  last =  gimple_build_assign (comp, value);
+gcc/tree-complex.c:      t = gimple_build_assign (x, r);
+gcc/tree-complex.c:	  t = gimple_build_assign (x, i);
+gcc/tree-complex.c:      stmt = gimple_build_assign (tmp, compare);
+gcc/tree-complex.c:	 stmt = gimple_build_assign (rr, tr);
+gcc/tree-complex.c:	 stmt = gimple_build_assign (ri, ti);
+gcc/tree-complex.c:	 stmt = gimple_build_assign (rr, tr);
+gcc/tree-complex.c:	 stmt = gimple_build_assign (ri, ti);
+gcc/tree-dfa.c:	  gassign *assign = gimple_build_assign (new_name, op);
+gcc/tree-eh.c:      x = gimple_build_assign (finally_tmp,
+gcc/tree-eh.c:      x = gimple_build_assign (finally_tmp,
+gcc/tree-eh.c:	  x = gimple_build_assign (finally_tmp,
+gcc/tree-eh.c:	  x = gimple_build_assign (finally_tmp,
+gcc/tree-eh.c:	      x = gimple_build_assign (lhs, rhs);
+gcc/tree-eh.c:	  gimple *s = gimple_build_assign (lhs, tmp);
+gcc/tree-emutls.c:	      x = gimple_build_assign (addr, t);
+gcc/tree-if-conv.c:  gimple *stmt = gimple_build_assign (new_name, expr);
+gcc/tree-if-conv.c:  new_assign = gimple_build_assign (tmp, c);
+gcc/tree-if-conv.c:      new_stmt = gimple_build_assign (res, rhs);
+gcc/tree-if-conv.c:      new_stmt = gimple_build_assign (res, rhs);
+gcc/tree-if-conv.c:      new_stmt = gimple_build_assign (res, rhs);
+gcc/tree-if-conv.c:	  new_stmt = gimple_build_assign (lhs, rhs);
+gcc/tree-inline.c:	      init_stmt = gimple_build_assign (new_tree, zero);
+gcc/tree-inline.c:	  gimple *bndcopy = gimple_build_assign (bndslot, retbnd);
+gcc/tree-inline.c:	  copy = gimple_build_assign (id->do_not_unshare
+gcc/tree-inline.c:	      new_stmt = gimple_build_assign (gimple_call_lhs (stmt), count);
+gcc/tree-inline.c:	      init_stmt = gimple_build_assign (def, rhs);
+gcc/tree-inline.c:	      init_stmt = gimple_build_assign (def, rhs);
+gcc/tree-inline.c:        init_stmt = gimple_build_assign (var, rhs);
+gcc/tree-inline.c:      insert_init_stmt (id, entry_bb, gimple_build_assign (temp, var));
+gcc/tree-inline.c:		      gimple_build_assign (bndtemp, chkp_get_zero_bounds_var ()));
+gcc/tree-inline.c:      gsi_insert_before (&iter, gimple_build_assign (op,
+gcc/tree-inline.c:      stmt = gimple_build_assign (gimple_call_lhs (stmt), use_retvar);
+gcc/tree-inline.c:	      stmt = gimple_build_assign (gimple_call_lhs (stmt), def);
+gcc/tree-inline.c:      gimple *new_stmt = gimple_build_assign (return_bounds, id->retbnd);
+gcc/tree-loop-distribution.c:      gimple *cstmt = gimple_build_assign (tem, NOP_EXPR, val);
+gcc/tree-nested.c:  stmt = gimple_build_assign (t, exp);
+gcc/tree-nested.c:  stmt = gimple_build_assign (exp, t);
+gcc/tree-nested.c:			   gimple_build_assign (fb_ref, fb_tmp));
+gcc/tree-nested.c:	  stmt = gimple_build_assign (y, x);
+gcc/tree-nested.c:      stmt = gimple_build_assign (x, get_chain_decl (root));
+gcc/tree-object-size.c:			    = gimple_build_assign (lhs, code, tem, cst);
+gcc/tree-outof-ssa.c:		  stmt = gimple_build_assign (name,
+gcc/tree-parloops.c:      stmt = gimple_build_assign (name, addr);
+gcc/tree-parloops.c:  stmt = gimple_build_assign (name, x);
+gcc/tree-parloops.c:  stmt = gimple_build_assign (ld_st_data->load, t);
+gcc/tree-parloops.c:  stmt = gimple_build_assign (t, red->initial_value);
+gcc/tree-parloops.c:  stmt = gimple_build_assign (t, ssa_name (elt->version));
+gcc/tree-parloops.c:  stmt = gimple_build_assign (elt->new_name, t);
+gcc/tree-parloops.c:  stmt = gimple_build_assign (control_name, nit_1);
+gcc/tree-parloops.c:	  assign_stmt = gimple_build_assign (param, build_fold_addr_expr (data));
+gcc/tree-parloops.c:	  assign_stmt = gimple_build_assign (new_data,
+gcc/tree-predcom.c:      new_stmt = gimple_build_assign (val, new_tree);
+gcc/tree-predcom.c:  new_stmt = gimple_build_assign (new_tree, unshare_expr (val));
+gcc/tree-predcom.c:      gassign *init_stmt = gimple_build_assign (var, init);
+gcc/tree-predcom.c:  new_stmt = gimple_build_assign (new_name, code, name1, name2);
+gcc/tree-predcom.c:  tmp_stmt = gimple_build_assign (tmp_name, gimple_assign_rhs_code (s1),
+gcc/tree-profile.c:  stmt1 = gimple_build_assign (gcov_type_tmp_var, ref);
+gcc/tree-profile.c:  stmt2 = gimple_build_assign (gcov_type_tmp_var, PLUS_EXPR,
+gcc/tree-profile.c:  stmt3 = gimple_build_assign (unshare_expr (ref), gimple_assign_lhs (stmt2));
+gcc/tree-profile.c:  stmt1 = gimple_build_assign (ic_gcov_type_ptr_var, ref_ptr);
+gcc/tree-profile.c:  stmt2 = gimple_build_assign (tmp1, unshare_expr (value->hvalue.value));
+gcc/tree-profile.c:  stmt3 = gimple_build_assign (ic_void_ptr_var, gimple_assign_lhs (stmt2));
+gcc/tree-profile.c:  stmt2 = gimple_build_assign (ic_void_ptr_var, void0);
+gcc/tree-scalar-evolution.c:      gassign *ass = gimple_build_assign (rslt, def);
+gcc/tree-sra.c:      stmt = gimple_build_assign (tmp, addr);
+gcc/tree-sra.c:	      stmt = gimple_build_assign (repl, expr);
+gcc/tree-sra.c:	      stmt = gimple_build_assign (expr, repl);
+gcc/tree-sra.c:      stmt = gimple_build_assign (get_access_replacement (access),
+gcc/tree-sra.c:      gimple *stmt = gimple_build_assign (rep, clobber);
+gcc/tree-sra.c:	      stmt = gimple_build_assign (repl, ref);
+gcc/tree-sra.c:	      stmt = gimple_build_assign (ref, repl);
+gcc/tree-sra.c:	  stmt = gimple_build_assign (get_access_replacement (lacc), rhs);
+gcc/tree-sra.c:	    = gimple_build_assign (get_access_replacement (access),
+gcc/tree-ssa.c:		    gimple *load = gimple_build_assign (other, lrhs);
+gcc/tree-ssa-ccp.c:	clobber_stmt = gimple_build_assign (var, clobber);
+gcc/tree-ssa-ccp.c:      g = gimple_build_assign (make_ssa_name (TREE_TYPE (lhs)),
+gcc/tree-ssa-dom.c:          /* NOTE tuples.  The call to gimple_build_assign below replaced
+gcc/tree-ssa-dom.c:          new_stmt = gimple_build_assign (rhs, lhs);
+gcc/tree-ssa-dom.c:        new_stmt = gimple_build_assign (rhs, lhs);
+gcc/tree-ssa-dom.c:	      new_stmt = gimple_build_assign (rhs, lhs);
+gcc/tree-ssa-dom.c:	    new_stmt = gimple_build_assign (rhs, lhs);
+gcc/tree-ssa-dse.c:		  gimple *new_stmt = gimple_build_assign (lhs, ptr);
+gcc/tree-ssa-forwprop.c:      g = gimple_build_assign (make_ssa_name (TREE_TYPE (def_arg2[0])),
+gcc/tree-ssa-forwprop.c:  g = gimple_build_assign (lhs,
+gcc/tree-ssa-forwprop.c:      g = gimple_build_assign (gimple_assign_lhs (stmt), NOP_EXPR, lhs);
+gcc/tree-ssa-forwprop.c:			= gimple_build_assign (gimple_assign_lhs (use_stmt),
+gcc/tree-ssa-forwprop.c:		  gimple *new_stmt = gimple_build_assign (new_lhs, rhs);
+gcc/tree-ssa-loop-im.c:  stmt1 = gimple_build_assign (name, RDIV_EXPR, real_one,
+gcc/tree-ssa-loop-im.c:  stmt2 = gimple_build_assign (lhs, MULT_EXPR, name,
+gcc/tree-ssa-loop-im.c:      stmt1 = gimple_build_assign (name, t);
+gcc/tree-ssa-loop-im.c:      stmt2 = gimple_build_assign (name, t);
+gcc/tree-ssa-loop-im.c:	  new_stmt = gimple_build_assign (gimple_phi_result (stmt),
+gcc/tree-ssa-loop-im.c:	  new_stmt = gimple_build_assign (gimple_phi_result (stmt),
+gcc/tree-ssa-loop-im.c:  stmt = gimple_build_assign (unshare_expr (mem), tmp_var);
+gcc/tree-ssa-loop-im.c:      gimple *stmt = gimple_build_assign (flag, boolean_true_node);
+gcc/tree-ssa-loop-im.c:  load = gimple_build_assign (tmp_var, unshare_expr (ref->mem.ref));
+gcc/tree-ssa-loop-im.c:      load = gimple_build_assign (store_flag, boolean_false_node);
+gcc/tree-ssa-loop-im.c:	store = gimple_build_assign (unshare_expr (ref->mem.ref), tmp_var);
+gcc/tree-ssa-loop-ivopts.c:      ass = gimple_build_assign (tgt, comp);
+gcc/tree-ssa-loop-manip.c:  stmt = gimple_build_assign (va, incr_op, vb, step);
+gcc/tree-ssa-loop-manip.c:  stmt = gimple_build_assign (res, val);
+gcc/tree-ssa-math-opts.c:      new_stmt = gimple_build_assign (recip_def, RDIV_EXPR,
+gcc/tree-ssa-math-opts.c:	stmt = gimple_build_assign (gimple_call_lhs (use_stmt), rhs);
+gcc/tree-ssa-math-opts.c:  mult_stmt = gimple_build_assign (ssa_target, MULT_EXPR, op0, op1);
+gcc/tree-ssa-math-opts.c:  div_stmt = gimple_build_assign (target, RDIV_EXPR,
+gcc/tree-ssa-math-opts.c:  gassign *stmt = gimple_build_assign (result, code, arg0, arg1);
+gcc/tree-ssa-math-opts.c:  gimple *stmt = gimple_build_assign (result, build1 (code, type, arg0));
+gcc/tree-ssa-math-opts.c:  gassign *stmt = gimple_build_assign (result, NOP_EXPR, val);
+gcc/tree-ssa-math-opts.c:		      gassign *new_stmt = gimple_build_assign (lhs, result);
+gcc/tree-ssa-math-opts.c:		      stmt = gimple_build_assign (cond, BIT_AND_EXPR,
+gcc/tree-ssa-math-opts.c:		      stmt = gimple_build_assign (result, COND_EXPR, cond,
+gcc/tree-ssa-math-opts.c:		      gassign *new_stmt = gimple_build_assign (lhs, result);
+gcc/tree-ssa-math-opts.c:		      gassign *new_stmt = gimple_build_assign (lhs, result);
+gcc/tree-ssa-math-opts.c:	  addr_stmt = gimple_build_assign (addr_tmp, addr_expr);
+gcc/tree-ssa-math-opts.c:	      load_stmt = gimple_build_assign (val_tmp, val_expr);
+gcc/tree-ssa-math-opts.c:	  load_stmt = gimple_build_assign (val_tmp, val_expr);
+gcc/tree-ssa-math-opts.c:      convert_stmt = gimple_build_assign (tmp, NOP_EXPR, src);
+gcc/tree-ssa-math-opts.c:      bswap_stmt = gimple_build_assign (NULL, src);
+gcc/tree-ssa-math-opts.c:      convert_stmt = gimple_build_assign (tgt, NOP_EXPR, tmp);
+gcc/tree-ssa-math-opts.c:      fma_stmt = gimple_build_assign (gimple_assign_lhs (use_stmt),
+gcc/tree-ssa-math-opts.c:  gassign *g2 = gimple_build_assign (lhs, REALPART_EXPR,
+gcc/tree-ssa-math-opts.c:  g2 = gimple_build_assign (ovf, IMAGPART_EXPR,
+gcc/tree-ssa-phiopt.c:  new_stmt = gimple_build_assign (result,  convert_code, temp);
+gcc/tree-ssa-phiopt.c:      new_stmt = gimple_build_assign (new_var2, CONVERT_EXPR, new_var);
+gcc/tree-ssa-phiopt.c:  new_stmt = gimple_build_assign (result, minmax, arg0, arg1);
+gcc/tree-ssa-phiopt.c:  new_stmt = gimple_build_assign (lhs, ABS_EXPR, rhs);
+gcc/tree-ssa-phiopt.c:      new_stmt = gimple_build_assign (result, NEGATE_EXPR, lhs);
+gcc/tree-ssa-phiopt.c:  new_stmt = gimple_build_assign (name, lhs);
+gcc/tree-ssa-phiopt.c:  new_stmt = gimple_build_assign (lhs, PHI_RESULT (newphi));
+gcc/tree-ssa-phiopt.c:  new_stmt = gimple_build_assign (lhs, PHI_RESULT (newphi));
+gcc/tree-ssa-phiprop.c:	  tmp = gimple_build_assign (new_var,
+gcc/tree-ssa-pre.c:	  newstmt = gimple_build_assign (name, folded);
+gcc/tree-ssa-pre.c:	    newstmt = gimple_build_assign (name, folded);
+gcc/tree-ssa-pre.c:		= gimple_build_assign (temp,
+gcc/tree-ssa-pre.c:	  gimple *stmt = gimple_build_assign (res, sprime);
+gcc/tree-ssa-propagate.c:          new_stmt = gimple_build_assign (lhs, expr);
+gcc/tree-ssa-propagate.c:          new_stmt = gimple_build_assign (lhs, expr);
+gcc/tree-ssa-reassoc.c:  sum = gimple_build_assign (op, opcode, op1, op2);
+gcc/tree-ssa-reassoc.c:	= gimple_build_assign (tmp, MULT_EXPR,
+gcc/tree-ssa-reassoc.c:	  gimple *g = gimple_build_assign (make_ssa_name (optype),
+gcc/tree-ssa-reassoc.c:      gassign *g = gimple_build_assign (var, gimple_assign_rhs_code (stmt),
+gcc/tree-ssa-reassoc.c:			  g = gimple_build_assign (new_lhs, new_op);
+gcc/tree-ssa-reassoc.c:			g = gimple_build_assign (new_lhs, rhs_code, new_op);
+gcc/tree-ssa-reassoc.c:		= gimple_build_assign (lhs, gimple_assign_rhs_code (stmt),
+gcc/tree-ssa-reassoc.c:	  stmt = gimple_build_assign (lhs, gimple_assign_rhs_code (stmt),
+gcc/tree-ssa-reassoc.c:  binrhs = gimple_build_assign (make_ssa_name (TREE_TYPE (lhs)),
+gcc/tree-ssa-reassoc.c:      g = gimple_build_assign (lhs, PLUS_EXPR, rhs1, rhs2);
+gcc/tree-ssa-reassoc.c:	      gimple *g = gimple_build_assign (x, PLUS_EXPR, a, b);
+gcc/tree-ssa-reassoc.c:		  mul_stmt = gimple_build_assign (target_ssa, MULT_EXPR,
+gcc/tree-ssa-reassoc.c:	  mul_stmt = gimple_build_assign (new_result, MULT_EXPR,
+gcc/tree-ssa-reassoc.c:			    = gimple_build_assign (negrhs, NEGATE_EXPR, lhs);
+gcc/tree-ssa-reassoc.c:		      mul_stmt = gimple_build_assign (lhs, MULT_EXPR,
+gcc/tree-ssa-reassoc.c:		  gassign *neg_stmt = gimple_build_assign (lhs, NEGATE_EXPR,
+gcc/tree-ssa-strlen.c:	  lenstmt = gimple_build_assign
+gcc/tree-ssa-strlen.c:      gimple *assign = gimple_build_assign (lhs, ptr);
+gcc/tree-stdarg.c:	    /* We use gimplify_assign here, rather than gimple_build_assign,
+gcc/tree-switch-conversion.c:  shift_stmt = gimple_build_assign (csui, tmp);
+gcc/tree-switch-conversion.c:    load = gimple_build_assign (name, cst);
+gcc/tree-switch-conversion.c:      load = gimple_build_assign (name, fetch);
+gcc/tree-switch-conversion.c:  stmt = gimple_build_assign (tidx, sub);
+gcc/tree-switch-conversion.c:      assign = gimple_build_assign (name, info->default_values[i]);
+gcc/tree-tailcall.c:    stmt = gimple_build_assign (result, code, acc, op1);
+gcc/tree-tailcall.c:      stmt = gimple_build_assign (result, rhs);
+gcc/tree-tailcall.c:    stmt = gimple_build_assign (var, code, acc, op1);
+gcc/tree-tailcall.c:      stmt = gimple_build_assign (var, rhs);
+gcc/tree-vect-data-refs.c:  incr_stmt = gimple_build_assign (new_dataref_ptr, POINTER_PLUS_EXPR,
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, vect1,
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, vect1,
+gcc/tree-vect-data-refs.c:		perm_stmt = gimple_build_assign (high, VEC_PERM_EXPR, vect1,
+gcc/tree-vect-data-refs.c:		perm_stmt = gimple_build_assign (low, VEC_PERM_EXPR, vect1,
+gcc/tree-vect-data-refs.c:      new_stmt = gimple_build_assign
+gcc/tree-vect-data-refs.c:      new_stmt = gimple_build_assign (vec_dest, data_ref);
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, first_vect,
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, first_vect,
+gcc/tree-vect-data-refs.c:	      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:	  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR,
+gcc/tree-vect-data-refs.c:      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, vect[0],
+gcc/tree-vect-data-refs.c:      perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, vect[1],
+gcc/tree-vect-generic.c:	      stmt = gimple_build_assign (addend, VEC_COND_EXPR, cond,
+gcc/tree-vect-generic.c:  g = gimple_build_assign (make_ssa_name (type), rhs);
+gcc/tree-vect-generic.c:  g = gimple_build_assign (lhs, PLUS_EXPR, gimple_assign_lhs (g),
+gcc/tree-vect-generic.c:      asgn = gimple_build_assign (tmpvec, vect);
+gcc/tree-vect-generic.c:	  gimple *repl = gimple_build_assign (slhs, code, srhs1, srhs2);
+gcc/tree-vect-loop.c:	    = gimple_build_assign (vect_get_new_ssa_name (vectype,
+gcc/tree-vect-loop.c:  new_stmt = gimple_build_assign (vec_dest, PLUS_EXPR, induc_def, vec_step);
+gcc/tree-vect-loop.c:	  new_stmt = gimple_build_assign (vec_dest, PLUS_EXPR,
+gcc/tree-vect-loop.c:		= gimple_build_assign
+gcc/tree-vect-loop.c:      new_stmt = gimple_build_assign (vect_get_new_vect_var (resvectype,
+gcc/tree-vect-loop.c:          new_vec_stmt = gimple_build_assign (vec_dest, tmp);
+gcc/tree-vect-loop.c:      gimple *zero_vec_stmt = gimple_build_assign (zero_vec, zero_vec_rhs);
+gcc/tree-vect-loop.c:      gimple *max_index_stmt = gimple_build_assign (max_index, REDUC_MAX_EXPR,
+gcc/tree-vect-loop.c:      gimple *max_index_vec_stmt = gimple_build_assign (max_index_vec,
+gcc/tree-vect-loop.c:      gimple *vec_compare_stmt = gimple_build_assign (vec_compare, EQ_EXPR,
+gcc/tree-vect-loop.c:      gimple *vec_cond_stmt = gimple_build_assign (vec_cond, VEC_COND_EXPR,
+gcc/tree-vect-loop.c:      gimple *vec_cond_cast_stmt = gimple_build_assign (vec_cond_cast,
+gcc/tree-vect-loop.c:      gimple *data_reduc_stmt = gimple_build_assign (data_reduc,
+gcc/tree-vect-loop.c:      epilog_stmt = gimple_build_assign (new_scalar_dest, data_reduc_cast);
+gcc/tree-vect-loop.c:	  epilog_stmt = gimple_build_assign (tmp_dest, tmp);
+gcc/tree-vect-loop.c:      epilog_stmt = gimple_build_assign (new_scalar_dest, tmp);
+gcc/tree-vect-loop.c:	  epilog_stmt = gimple_build_assign (tmp, COND_EXPR, zcompare,
+gcc/tree-vect-loop.c:	      epilog_stmt = gimple_build_assign (vec_dest, VEC_PERM_EXPR,
+gcc/tree-vect-loop.c:	      epilog_stmt = gimple_build_assign (vec_dest, code, new_name,
+gcc/tree-vect-loop.c:	  epilog_stmt = gimple_build_assign (new_scalar_dest, rhs);
+gcc/tree-vect-loop.c:              epilog_stmt = gimple_build_assign (new_scalar_dest, rhs);
+gcc/tree-vect-loop.c:                  epilog_stmt = gimple_build_assign (new_scalar_dest, rhs);
+gcc/tree-vect-loop.c:		      epilog_stmt = gimple_build_assign (new_scalar_dest, code,
+gcc/tree-vect-loop.c:		  new_stmt = gimple_build_assign (new_scalar_dest, code,
+gcc/tree-vect-loop.c:      epilog_stmt = gimple_build_assign (new_dest, expr);
+gcc/tree-vect-loop.c:          new_stmt = gimple_build_assign (vec_dest, expr);
+gcc/tree-vect-loop.c:	  gimple *index_condition = gimple_build_assign (cond_name,
+gcc/tree-vect-loop-manip.c:      addr_stmt = gimple_build_assign (addr_tmp_name, NOP_EXPR, addr_base);
+gcc/tree-vect-loop-manip.c:	  or_stmt = gimple_build_assign (new_or_tmp_name, BIT_IOR_EXPR,
+gcc/tree-vect-loop-manip.c:  and_stmt = gimple_build_assign (and_tmp_name, BIT_AND_EXPR,
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (var, DOT_PROD_EXPR,
+gcc/tree-vect-patterns.c:  gimple *pattern_stmt = gimple_build_assign (var, SAD_EXPR, sad_oprnd0,
+gcc/tree-vect-patterns.c:  *wstmt = gimple_build_assign (new_oprnd, NOP_EXPR, *oprnd);
+gcc/tree-vect-patterns.c:      new_stmt = gimple_build_assign (new_oprnd, NOP_EXPR, old_oprnd);
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (var, WIDEN_MULT_EXPR, oprnd0, oprnd1);
+gcc/tree-vect-patterns.c:      pattern_stmt = gimple_build_assign (vect_recog_temp_ssa_var (type, NULL),
+gcc/tree-vect-patterns.c:      stmt = gimple_build_assign (var, MULT_EXPR, base, base);
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (var, WIDEN_SUM_EXPR, oprnd0, oprnd1);
+gcc/tree-vect-patterns.c:	      new_stmt = gimple_build_assign (new_oprnd, NOP_EXPR, oprnd);
+gcc/tree-vect-patterns.c:	  new_stmt = gimple_build_assign (new_oprnd, NOP_EXPR, oprnd);
+gcc/tree-vect-patterns.c:	= gimple_build_assign (var, gimple_assign_rhs_code (stmt), op0, op1);
+gcc/tree-vect-patterns.c:	  pattern_stmt = gimple_build_assign (new_oprnd, NOP_EXPR, var);
+gcc/tree-vect-patterns.c:    gimple_build_assign (var, WIDEN_LSHIFT_EXPR, oprnd0, oprnd1);
+gcc/tree-vect-patterns.c:      def_stmt = gimple_build_assign (def, NOP_EXPR, oprnd1);
+gcc/tree-vect-patterns.c:      def_stmt = gimple_build_assign (def2, NEGATE_EXPR, def);
+gcc/tree-vect-patterns.c:      def_stmt = gimple_build_assign (def2, BIT_AND_EXPR,
+gcc/tree-vect-patterns.c:  def_stmt = gimple_build_assign (var1, rhs_code == LROTATE_EXPR
+gcc/tree-vect-patterns.c:  def_stmt = gimple_build_assign (var2, rhs_code == LROTATE_EXPR
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (var, BIT_IOR_EXPR, var1, var2);
+gcc/tree-vect-patterns.c:	      def_stmt = gimple_build_assign (def, BIT_AND_EXPR, rhs1, mask);
+gcc/tree-vect-patterns.c:      def_stmt = gimple_build_assign (def, NOP_EXPR, oprnd1);
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (var, rhs_code, oprnd0, def);
+gcc/tree-vect-patterns.c:	= gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	= gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	 = gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (var, COND_EXPR, cond,
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (var, PLUS_EXPR, oprnd0,
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	      def_stmt = gimple_build_assign (signmask, COND_EXPR, cond,
+gcc/tree-vect-patterns.c:	      def_stmt = gimple_build_assign (var, COND_EXPR, cond,
+gcc/tree-vect-patterns.c:	      def_stmt = gimple_build_assign (var, RSHIFT_EXPR,
+gcc/tree-vect-patterns.c:		= gimple_build_assign (signmask, NOP_EXPR, var);
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	  def_stmt = gimple_build_assign (t1, MULT_HIGHPART_EXPR, oprnd0,
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (t2, MINUS_EXPR, oprnd0, t1);
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (t3, RSHIFT_EXPR, t2, integer_one_node);
+gcc/tree-vect-patterns.c:	    = gimple_build_assign (t4, PLUS_EXPR, t1, t3);
+gcc/tree-vect-patterns.c:		= gimple_build_assign (q, RSHIFT_EXPR, t4,
+gcc/tree-vect-patterns.c:		= gimple_build_assign (t1, RSHIFT_EXPR, oprnd0,
+gcc/tree-vect-patterns.c:	  def_stmt = gimple_build_assign (t2, MULT_HIGHPART_EXPR, t1,
+gcc/tree-vect-patterns.c:		= gimple_build_assign (q, RSHIFT_EXPR, t2,
+gcc/tree-vect-patterns.c:      def_stmt = gimple_build_assign (t1, MULT_HIGHPART_EXPR, oprnd0,
+gcc/tree-vect-patterns.c:	  def_stmt = gimple_build_assign (t2, PLUS_EXPR, t1, oprnd0);
+gcc/tree-vect-patterns.c:	  def_stmt = gimple_build_assign (t3, RSHIFT_EXPR, t2,
+gcc/tree-vect-patterns.c:	    def_stmt = gimple_build_assign (t4, INTEGER_CST,
+gcc/tree-vect-patterns.c:	    def_stmt = gimple_build_assign (t4, RSHIFT_EXPR, oprnd0,
+gcc/tree-vect-patterns.c:	  pattern_stmt = gimple_build_assign (q, MINUS_EXPR, d < 0 ? t4 : t3,
+gcc/tree-vect-patterns.c:      def_stmt = gimple_build_assign (t1, MULT_EXPR, q, oprnd1);
+gcc/tree-vect-patterns.c:      pattern_stmt = gimple_build_assign (r, MINUS_EXPR, oprnd0, t1);
+gcc/tree-vect-patterns.c:  def_stmt = gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (vect_recog_temp_ssa_var (type, NULL),
+gcc/tree-vect-patterns.c:  cast_stmt = gimple_build_assign (vect_recog_temp_ssa_var (type, NULL),
+gcc/tree-vect-patterns.c:	= gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	= gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	= gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	= gimple_build_assign (vect_recog_temp_ssa_var (itype, NULL),
+gcc/tree-vect-patterns.c:	    pattern_stmt = gimple_build_assign (lhs, SSA_NAME, rhs);
+gcc/tree-vect-patterns.c:	      = gimple_build_assign (lhs, NOP_EXPR, rhs);
+gcc/tree-vect-patterns.c:	  pattern_stmt = gimple_build_assign (tmp, COND_EXPR, var, cst1, cst0);
+gcc/tree-vect-patterns.c:	      pattern_stmt = gimple_build_assign (lhs, CONVERT_EXPR, tmp);
+gcc/tree-vect-patterns.c:	  = gimple_build_assign (lhs, COND_EXPR,
+gcc/tree-vect-patterns.c:	  pattern_stmt = gimple_build_assign (rhs, COND_EXPR, var, cst1, cst0);
+gcc/tree-vect-patterns.c:	  gimple *cast_stmt = gimple_build_assign (rhs2, NOP_EXPR, rhs);
+gcc/tree-vect-patterns.c:      pattern_stmt = gimple_build_assign (lhs, SSA_NAME, rhs);
+gcc/tree-vect-patterns.c:  stmt = gimple_build_assign (tmp, CONVERT_EXPR, mask);
+gcc/tree-vect-patterns.c:	  pattern_stmt = gimple_build_assign (tmp, rhs1);
+gcc/tree-vect-patterns.c:      pattern_stmt = gimple_build_assign (lhs, COND_EXPR, tmp,
+gcc/tree-vect-patterns.c:  pattern_stmt = gimple_build_assign (lhs, rhs_code, rhs1, rhs2);
+gcc/tree-vect-slp.c:		      init_stmt = gimple_build_assign (new_temp, NOP_EXPR, op);
+gcc/tree-vect-slp.c:			= gimple_build_assign (new_temp, VIEW_CONVERT_EXPR,
+gcc/tree-vect-slp.c:	  perm_stmt = gimple_build_assign (perm_dest, VEC_PERM_EXPR,
+gcc/tree-vect-slp.c:	      vstmt = gimple_build_assign (make_ssa_name (vectype),
+gcc/tree-vect-slp.c:      new_stmt = gimple_build_assign (lhs, build_zero_cst (TREE_TYPE (lhs)));
+gcc/tree-vect-stmts.c:  new_stmt = gimple_build_assign (vect, array_ref);
+gcc/tree-vect-stmts.c:  new_stmt = gimple_build_assign (array_ref, vect);
+gcc/tree-vect-stmts.c:		  init_stmt = gimple_build_assign (new_temp, COND_EXPR,
+gcc/tree-vect-stmts.c:		init_stmt = gimple_build_assign (new_temp,
+gcc/tree-vect-stmts.c:		init_stmt = gimple_build_assign (new_temp, NOP_EXPR, val);
+gcc/tree-vect-stmts.c:  init_stmt = gimple_build_assign  (new_temp, val);
+gcc/tree-vect-stmts.c:		= gimple_build_assign (var, VIEW_CONVERT_EXPR, op);
+gcc/tree-vect-stmts.c:		    = gimple_build_assign (var, VIEW_CONVERT_EXPR, mask_op);
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (var, VIEW_CONVERT_EXPR, op);
+gcc/tree-vect-stmts.c:      new_stmt = gimple_build_assign (lhs, build_zero_cst (TREE_TYPE (lhs)));
+gcc/tree-vect-stmts.c:      new_stmt = gimple_build_assign (lhs, build_zero_cst (TREE_TYPE (lhs)));
+gcc/tree-vect-stmts.c:		      new_stmt = gimple_build_assign (new_temp, convert_code,
+gcc/tree-vect-stmts.c:	      gimple *init_stmt = gimple_build_assign (new_var, cst);
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (new_temp, new_var);
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (new_temp, convert_code,
+gcc/tree-vect-stmts.c:  new_stmt = gimple_build_assign (lhs, build_zero_cst (type));
+gcc/tree-vect-stmts.c:			= gimple_build_assign (make_ssa_name (atype),
+gcc/tree-vect-stmts.c:			    = gimple_build_assign (make_ssa_name (atype),
+gcc/tree-vect-stmts.c:		    = gimple_build_assign (phi_arg, code, phi_res, tcst);
+gcc/tree-vect-stmts.c:		  new_stmt = gimple_build_assign (new_temp, code,
+gcc/tree-vect-stmts.c:		    = gimple_build_assign (make_ssa_name (vectype), t);
+gcc/tree-vect-stmts.c:		  new_stmt = gimple_build_assign (new_temp, clobber);
+gcc/tree-vect-stmts.c:			= gimple_build_assign (make_ssa_name (rtype), tem);
+gcc/tree-vect-stmts.c:		  new_stmt = gimple_build_assign (new_temp, clobber);
+gcc/tree-vect-stmts.c:		= gimple_build_assign (make_ssa_name (vec_dest), vec_oprnd0);
+gcc/tree-vect-stmts.c:		= gimple_build_assign (make_ssa_name (vec_dest), t);
+gcc/tree-vect-stmts.c:					   gimple_build_assign (new_temp,
+gcc/tree-vect-stmts.c:      new_stmt = gimple_build_assign (lhs, build_zero_cst (type));
+gcc/tree-vect-stmts.c:      new_stmt = gimple_build_assign (vec_dest, code, vec_oprnd0, vec_oprnd1);
+gcc/tree-vect-stmts.c:      new_stmt = gimple_build_assign (vec_dest, code, vop0, vop1);
+gcc/tree-vect-stmts.c:		  new_stmt = gimple_build_assign (vec_dest, code1, vop0);
+gcc/tree-vect-stmts.c:		      new_stmt = gimple_build_assign (new_temp, codecvt1,
+gcc/tree-vect-stmts.c:		    new_stmt = gimple_build_assign (new_temp, codecvt1,
+gcc/tree-vect-stmts.c:         new_stmt = gimple_build_assign (vec_dest, vop);
+gcc/tree-vect-stmts.c:	  new_stmt = gimple_build_assign (vec_dest, code, vop0, vop1);
+gcc/tree-vect-stmts.c:	  new_stmt = gimple_build_assign (vec_dest, code, vop0, vop1, vop2);
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (var, VIEW_CONVERT_EXPR, src);
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (var, VIEW_CONVERT_EXPR, op);
+gcc/tree-vect-stmts.c:	      incr = gimple_build_assign (newoff, POINTER_PLUS_EXPR,
+gcc/tree-vect-stmts.c:		  assign = gimple_build_assign (newref, elem);
+gcc/tree-vect-stmts.c:		  incr = gimple_build_assign (newoff, POINTER_PLUS_EXPR,
+gcc/tree-vect-stmts.c:		    = gimple_build_assign (new_temp, VEC_PERM_EXPR, vec_oprnd,
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (data_ref, vec_oprnd);
+gcc/tree-vect-stmts.c:  perm_stmt = gimple_build_assign (data_ref, VEC_PERM_EXPR, x, y, mask_vec);
+gcc/tree-vect-stmts.c:		= gimple_build_assign (var, VIEW_CONVERT_EXPR, op);
+gcc/tree-vect-stmts.c:		= gimple_build_assign (var, VIEW_CONVERT_EXPR, op);
+gcc/tree-vect-stmts.c:		  incr = gimple_build_assign (newoff, POINTER_PLUS_EXPR,
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (make_ssa_name (ltype),
+gcc/tree-vect-stmts.c:	      gimple *incr = gimple_build_assign (newoff, POINTER_PLUS_EXPR,
+gcc/tree-vect-stmts.c:		    new_stmt = gimple_build_assign
+gcc/tree-vect-stmts.c:		    new_stmt = gimple_build_assign (vec_dest, data_ref);
+gcc/tree-vect-stmts.c:		    new_stmt = gimple_build_assign
+gcc/tree-vect-stmts.c:		  new_stmt = gimple_build_assign
+gcc/tree-vect-stmts.c:	      new_stmt = gimple_build_assign (vec_dest, data_ref);
+gcc/tree-vect-stmts.c:		  new_stmt = gimple_build_assign (vec_dest, REALIGN_LOAD_EXPR,
+gcc/tree-vect-stmts.c:			 gimple_build_assign (tem,
+gcc/tree-vect-stmts.c:          new_stmt = gimple_build_assign (new_temp, VEC_COND_EXPR,
+gcc/tree-vect-stmts.c:	  new_stmt = gimple_build_assign (new_temp, code, vec_rhs1, vec_rhs2);
+gcc/tree-vrp.c:  assertion = gimple_build_assign (NULL_TREE, a);
+gcc/tree-vrp.c:	= gimple_build_assign (tem, BIT_XOR_EXPR, op0, op1);
+gcc/tree-vrp.c:  conv = gimple_build_assign (tem, NOP_EXPR, rhs1);
+gcc/tree-vrp.c:    g = gimple_build_assign (gimple_call_lhs (stmt), subcode, op0, op1);
+gcc/tree-vrp.c:	  g = gimple_build_assign (make_ssa_name (utype), NOP_EXPR, op0);
+gcc/tree-vrp.c:	  g = gimple_build_assign (make_ssa_name (utype), NOP_EXPR, op1);
+gcc/tree-vrp.c:      g = gimple_build_assign (make_ssa_name (utype), subcode, op0, op1);
+gcc/tree-vrp.c:	  g = gimple_build_assign (make_ssa_name (type), NOP_EXPR,
+gcc/tree-vrp.c:      g = gimple_build_assign (gimple_call_lhs (stmt), COMPLEX_EXPR,
+gcc/tsan.c:		    g = gimple_build_assign (var, NOP_EXPR, args[1]);
+gcc/tsan.c:		    g = gimple_build_assign (var, BIT_AND_EXPR,
+gcc/tsan.c:		    g = gimple_build_assign (lhs, BIT_NOT_EXPR, var);
+gcc/tsan.c:		  g = gimple_build_assign (lhs, tsan_atomic_table[i].code,
+gcc/tsan.c:		g = gimple_build_assign (make_ssa_name (TREE_TYPE (t)),
+gcc/tsan.c:	    g = gimple_build_assign (t, args[1]);
+gcc/tsan.c:		g = gimple_build_assign (make_ssa_name (TREE_TYPE (t)), t);
+gcc/tsan.c:		g = gimple_build_assign (lhs, COND_EXPR, cond, args[1],
+gcc/ubsan.c:	  g = gimple_build_assign (check_align, NOP_EXPR, ptr);
+gcc/ubsan.c:      g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/ubsan.c:	  g = gimple_build_assign (p, NOP_EXPR, ptr);
+gcc/ubsan.c:	  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/ubsan.c:	  g = gimple_build_assign (p, NOP_EXPR, ptr);
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), BIT_XOR_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), MULT_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), LSHIFT_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), BIT_XOR_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), BIT_XOR_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), MULT_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), LSHIFT_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), BIT_XOR_EXPR,
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (htype), MULT_EXPR,
+gcc/ubsan.c:      g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/ubsan.c:  g = gimple_build_assign (make_ssa_name (pointer_sized_int_node),
+gcc/ubsan.c:  gimple *g = gimple_build_assign (make_ssa_name (ptype),
+gcc/ubsan.c:      g = gimple_build_assign (lhs, NOP_EXPR, urhs);
+gcc/ubsan.c:      g = gimple_build_assign (urhs, mem);
+gcc/ubsan.c:      g = gimple_build_assign (make_ssa_name (utype), MINUS_EXPR, urhs, minv);
+gcc/ubsan.c:	      g = gimple_build_assign (make_ssa_name (TREE_TYPE (arg)), arg);
+gcc/value-prof.c:  stmt1 = gimple_build_assign (tmp0, fold_convert (optype, value));
+gcc/value-prof.c:  stmt2 = gimple_build_assign (tmp1, op2);
+gcc/value-prof.c:  stmt1 = gimple_build_assign (tmp2, gimple_assign_rhs_code (stmt), op1, tmp0);
+gcc/value-prof.c:  stmt1 = gimple_build_assign (tmp2, gimple_assign_rhs_code (stmt), op1, op2);
+gcc/value-prof.c:  stmt2 = gimple_build_assign (tmp2, PLUS_EXPR, op2,
+gcc/value-prof.c:  stmt3 = gimple_build_assign (tmp3, BIT_AND_EXPR, tmp2, op2);
+gcc/value-prof.c:  stmt1 = gimple_build_assign (result, BIT_AND_EXPR, op1, tmp2);
+gcc/value-prof.c:  stmt1 = gimple_build_assign (result, gimple_assign_rhs_code (stmt),
+gcc/value-prof.c:  stmt1 = gimple_build_assign (result, op1);
+gcc/value-prof.c:  stmt2 = gimple_build_assign (tmp1, op2);
+gcc/value-prof.c:      stmt1 = gimple_build_assign (result, MINUS_EXPR, result, tmp1);
+gcc/value-prof.c:  stmt1 = gimple_build_assign (result, gimple_assign_rhs_code (stmt),
+gcc/value-prof.c:  load_stmt = gimple_build_assign (tmp0, tmp);
+gcc/value-prof.c:  load_stmt = gimple_build_assign (tmp1, tmp);
+gcc/value-prof.c:  tmp_stmt = gimple_build_assign (tmp0, fold_convert (optype, icall_size));
+gcc/value-prof.c:  tmp_stmt = gimple_build_assign (tmp1, vcall_size);
