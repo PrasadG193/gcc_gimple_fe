@@ -66,7 +66,6 @@ along with GCC; see the file COPYING3.  If not see
 #include "gimple-pretty-print.h"
 #include "tree-ssa.h"
 #include "pass_manager.h"
-#include "tree-pass.h"
 
 /* We need to walk over decls with incomplete struct/union/enum types
    after parsing the whole translation unit.
@@ -1653,6 +1652,7 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
   bool diagnosed_no_specs = false;
   location_t here = c_parser_peek_token (parser)->location;
   bool gimple_body_p = false;
+  opt_pass *pass = NULL;
 
   if (static_assert_ok
       && c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT))
@@ -1710,6 +1710,7 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
 	{
 	  gimple_body_p = true;
 	  c_parser_consume_token (parser);
+	  pass = g->get_passes ()->get_pass_by_name ("tree-ccp1");
 	}
     }
 
@@ -2119,6 +2120,10 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
 	c_parser_declaration_or_fndef (parser, false, false, false,
 				       true, false, NULL, vNULL);
       store_parm_decls ();
+
+      if (pass)
+	cfun->custom_pass_list = pass;
+
       if (omp_declare_simd_clauses.exists ()
 	  || !vec_safe_is_empty (parser->cilk_simd_fn_tokens))
 	c_finish_omp_declare_simd (parser, current_function_decl, NULL_TREE,

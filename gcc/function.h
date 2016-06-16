@@ -229,7 +229,7 @@ struct GTY(()) function {
   gimple_seq gimple_body;
 
   /* GIMPLEFE Passes */
-  gimple_opt_pass *custom_pass_list;
+  opt_pass *custom_pass_list = NULL;
 
   /* SSA and dataflow information.  */
   struct gimple_df *gimple_df;
