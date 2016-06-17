@@ -1409,6 +1409,7 @@ static void c_parser_gimple_compound_statement (c_parser *, gimple_seq *);
 static void c_finish_gimple_expr_stmt (tree, gimple_seq *);
 static void c_parser_gimple_basic_block (c_parser *, gimple_seq *);
 static void c_parser_gimple_expression (c_parser *, gimple_seq *);
+static void c_parser_pass_list (c_parser *, opt_pass **);
 
 /* Parse a translation unit (C90 6.7, C99 6.9).
 
@@ -1710,7 +1711,9 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
 	{
 	  gimple_body_p = true;
 	  c_parser_consume_token (parser);
-	  pass = g->get_passes ()->get_pass_by_name ("tree-ccp1");
+	  c_parser_pass_list (parser, &pass);
+	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
+				     "expected %<)%>");
 	}
     }
 
@@ -18287,6 +18290,46 @@ c_parser_gimple_basic_block (c_parser *parser, gimple_seq *seq)
   bb = build_decl (loc1, LABEL_DECL, name, void_type_node);
   DECL_CONTEXT (bb) = current_function_decl;
   gimple_seq_add_stmt (seq, gimple_build_label (bb));
+  return;
+}
+
+/* Parse gimple pass list */
+
+static void 
+c_parser_pass_list (c_parser *parser, opt_pass **pass)
+{
+  if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
+    {
+      return;
+    }
+
+  if (c_parser_next_token_is (parser, CPP_CLOSE_PAREN))
+    {
+      return;
+    }
+
+  while (c_parser_next_token_is_not (parser, CPP_CLOSE_PAREN))
+    {
+      if (c_parser_next_token_is (parser, CPP_EOF))
+	{
+	  c_parser_error (parser, "expected pass names");
+	  return;
+	}
+
+      if (c_parser_next_token_is (parser, CPP_STRING))
+	{
+	  const char *name = TREE_STRING_POINTER(c_parser_peek_token (parser)->value);
+	  c_parser_consume_token (parser);
+	  *pass = g->get_passes ()->get_pass_by_name (name);
+	}
+//      else if (c_parser_next_token_is (parser, CPP_COMMA))
+//	c_parser_consume_token (parser);
+      else
+	{
+	  c_parser_error (parser, "expected pass names");
+	  return;
+	}
+    }
   return;
 }
 
