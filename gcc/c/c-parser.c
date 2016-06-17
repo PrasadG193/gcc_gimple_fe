@@ -1410,6 +1410,7 @@ static void c_finish_gimple_expr_stmt (tree, gimple_seq *);
 static void c_parser_gimple_basic_block (c_parser *, gimple_seq *);
 static void c_parser_gimple_expression (c_parser *, gimple_seq *);
 static void c_parser_pass_list (c_parser *, opt_pass **);
+static opt_pass *c_parser_pass_list_params (c_parser *, opt_pass **);
 
 /* Parse a translation unit (C90 6.7, C99 6.9).
 
@@ -18298,6 +18299,7 @@ c_parser_gimple_basic_block (c_parser *parser, gimple_seq *seq)
 static void 
 c_parser_pass_list (c_parser *parser, opt_pass **pass)
 {
+  opt_pass *pass_start;
   if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
     {
       return;
@@ -18308,29 +18310,92 @@ c_parser_pass_list (c_parser *parser, opt_pass **pass)
       return;
     }
 
+  if (c_parser_next_token_is (parser, CPP_NAME))
+    {
+      const char *op = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
+      c_parser_consume_token (parser);
+      if (!strcmp (op, "execute"))
+	{
+	  pass_start = c_parser_pass_list_params (parser, pass);
+	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
+				     "expected %<)%>");
+	  (*pass)->next = NULL;
+	  *pass = pass_start;
+	}
+      else if (!strcmp (op, "startwith"))
+	{
+	  *pass = c_parser_pass_list_params (parser, pass);
+	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
+				     "expected %<)%>");
+	}
+      else
+	{
+	  c_parser_error (parser, "invalid operation");
+	  return;
+	}
+    }
+  else if (c_parser_next_token_is (parser, CPP_EOF))
+    {
+      c_parser_error (parser, "expected parameters");
+      return;
+    }
+
+  return;
+}
+
+static opt_pass *
+c_parser_pass_list_params (c_parser *parser, opt_pass **pass)
+{
+  opt_pass *pass_start, *new_pass;
+  if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
+    {
+      return NULL;
+    }
+
+  if (c_parser_next_token_is (parser, CPP_CLOSE_PAREN))
+    {
+      return NULL;
+    }
+
   while (c_parser_next_token_is_not (parser, CPP_CLOSE_PAREN))
     {
       if (c_parser_next_token_is (parser, CPP_EOF))
 	{
 	  c_parser_error (parser, "expected pass names");
-	  return;
+	  return NULL;
 	}
 
       if (c_parser_next_token_is (parser, CPP_STRING))
 	{
 	  const char *name = TREE_STRING_POINTER(c_parser_peek_token (parser)->value);
 	  c_parser_consume_token (parser);
-	  *pass = g->get_passes ()->get_pass_by_name (name);
+	  new_pass = g->get_passes ()->get_pass_by_name (name);
+
+	  if (!new_pass)
+	    {
+	      c_parser_error (parser, "invalid pass name");
+	      return NULL;
+	    }
+	  if (*pass)
+	    {
+	      (*pass)->next = new_pass;
+	      (*pass) = (*pass)->next;
+	    }
+	  else
+	    {
+	      *pass = new_pass;
+	      pass_start = *pass;
+	    }
 	}
-//      else if (c_parser_next_token_is (parser, CPP_COMMA))
-//	c_parser_consume_token (parser);
+      else if (c_parser_next_token_is (parser, CPP_COMMA))
+	c_parser_consume_token (parser);
       else
 	{
 	  c_parser_error (parser, "expected pass names");
-	  return;
+	  return NULL;
 	}
     }
-  return;
+  return pass_start;
 }
 
 #include "gt-c-c-parser.h"
