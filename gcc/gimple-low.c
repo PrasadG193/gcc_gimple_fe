@@ -90,10 +90,8 @@ lower_function_body (void)
 
   /* The gimplifier should've left a body of exactly one statement,
      namely a GIMPLE_BIND.  */
-  /* FIXME : to parse gimple body without gimple bind */
-  if (! (gimple_seq_first (body) == gimple_seq_last (body)
-      && gimple_code (gimple_seq_first_stmt (body)) == GIMPLE_BIND))
-    return 0;
+  gcc_assert (gimple_seq_first (body) == gimple_seq_last (body)
+      && gimple_code (gimple_seq_first_stmt (body)) == GIMPLE_BIND);
 
   memset (&data, 0, sizeof (data));
   data.block = DECL_INITIAL (current_function_decl);
