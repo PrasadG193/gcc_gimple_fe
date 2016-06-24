@@ -726,9 +726,6 @@ is_gimple_ip_invariant (const_tree t)
 bool
 is_gimple_reg (tree t)
 {
-  if (flag_gimple)  /* FIXME : For GIMPLE FE gimple expr*/
-    return true;
-
   if (virtual_operand_p (t))
     return false;
 
