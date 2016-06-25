@@ -1405,7 +1405,7 @@ static tree c_parser_array_notation (location_t, c_parser *, tree, tree);
 static tree c_parser_cilk_clause_vectorlength (c_parser *, tree, bool);
 static void c_parser_cilk_grainsize (c_parser *, bool *);
 static void c_parser_parse_gimple_body (c_parser *);
-static void c_parser_gimple_compound_statement (c_parser *, gimple_seq *);
+static bool c_parser_gimple_compound_statement (c_parser *, gimple_seq *);
 static void c_parser_gimple_label (c_parser *, gimple_seq *);
 static void c_parser_gimple_expression (c_parser *, gimple_seq *);
 static c_expr c_parser_gimple_binary_expression (c_parser *, enum tree_code *);
@@ -1419,6 +1419,9 @@ static void c_parser_gimple_declaration (c_parser *);
 static void c_parser_gimple_goto_stmt (location_t, tree, gimple_seq *);
 static void c_parser_gimple_if_stmt (c_parser *, gimple_seq *);
 static void c_parser_gimple_switch_stmt (c_parser *, gimple_seq *);
+static void c_parser_gimple_return_stmt (c_parser *, gimple_seq *);
+static void c_finish_gimple_return (location_t, tree);
+
 
 /* Parse a translation unit (C90 6.7, C99 6.9).
 
@@ -18127,6 +18130,7 @@ c_parser_array_notation (location_t loc, c_parser *parser, tree initial_index,
 void 
 c_parser_parse_gimple_body (c_parser *parser)
 {
+  bool return_p = false;
   debug_generic_expr (current_function_decl);
   gimple_seq seq;
   gimple_seq body;
@@ -18137,10 +18141,14 @@ c_parser_parse_gimple_body (c_parser *parser)
   seq = NULL;
   body = NULL;
   
-  c_parser_gimple_compound_statement (parser, &seq);
+  return_p = c_parser_gimple_compound_statement (parser, &seq);
 
-  greturn *r = gimple_build_return (NULL);
-  gimple_seq_add_stmt (&seq, r);
+  if (!return_p)
+    {
+      gimple *ret;
+      ret = gimple_build_return (NULL);
+      gimple_seq_add_stmt (&seq, ret);
+    }
 
   tree block = NULL;
   block = pop_scope ();
@@ -18165,12 +18173,14 @@ c_parser_parse_gimple_body (c_parser *parser)
 
 /* Parser a compound statement in gimple function body */
 
-static void
+static bool
 c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 {
+  bool return_p = false;
+
   if (!c_parser_require (parser, CPP_OPEN_BRACE, "expected %<{%>"))
     {
-      return;
+      return return_p;
     }
   if (c_parser_next_token_is (parser, CPP_CLOSE_BRACE))
     {
@@ -18227,6 +18237,11 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 			}
 		    }
 		  break;
+		case RID_RETURN:
+		  return_p = true;
+		  c_parser_gimple_return_stmt (parser, seq);
+		  c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<;%>");
+		  break;
 		default:
 		  goto expr_stmt;
 		}
@@ -18246,7 +18261,7 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
   c_parser_consume_token (parser);
 
   out:
-  return;
+  return return_p;
 }
 
 /* Parse a gimple expression */
@@ -19075,6 +19090,87 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
   gimple_seq_add_stmt (seq, gimple_build_switch (cond_expr.value, default_label, labels));
   gimple_seq_add_seq (seq, switch_body);
   labels.release();
+}
+
+/* Parse gimple return statement */
+
+static void 
+c_parser_gimple_return_stmt (c_parser *parser, gimple_seq *seq)
+{
+  location_t loc = c_parser_peek_token (parser)->location;
+  gimple *ret;
+  c_parser_consume_token (parser);
+  if (c_parser_next_token_is (parser, CPP_SEMICOLON))
+    {
+      c_finish_gimple_return (loc, NULL_TREE);
+      ret = gimple_build_return (NULL);
+      gimple_seq_add_stmt (seq, ret);
+    }
+  else
+    {
+      location_t xloc = c_parser_peek_token (parser)->location;
+      c_expr expr = c_parser_gimple_unary_expression (parser);
+      c_finish_gimple_return (xloc, expr.value);
+      ret = gimple_build_return (expr.value);
+      gimple_seq_add_stmt (seq, ret);
+    }
+}
+
+/* Support function for c_parser_gimple_return_stmt */
+
+static void 
+c_finish_gimple_return (location_t loc, tree retval)
+{
+  tree valtype = TREE_TYPE (TREE_TYPE (current_function_decl));
+
+  /* Use the expansion point to handle cases such as returning NULL
+     in a function returning void.  */
+  source_location xloc = expansion_point_location_if_in_system_header (loc);
+
+  if (TREE_THIS_VOLATILE (current_function_decl))
+    warning_at (xloc, 0,
+		"function declared %<noreturn%> has a %<return%> statement");
+
+  if (!retval)
+    {
+      current_function_returns_null = 1;
+      if ((warn_return_type || flag_isoc99)
+	  && valtype != 0 && TREE_CODE (valtype) != VOID_TYPE)
+	{
+	  bool warned_here;
+	  if (flag_isoc99)
+	    warned_here = pedwarn
+	      (loc, 0,
+	       "%<return%> with no value, in function returning non-void");
+	  else
+	    warned_here = warning_at
+	      (loc, OPT_Wreturn_type,
+	       "%<return%> with no value, in function returning non-void");
+	  if (warned_here)
+	    inform (DECL_SOURCE_LOCATION (current_function_decl),
+		    "declared here");
+	}
+    }
+  else if (valtype == 0 || TREE_CODE (valtype) == VOID_TYPE)
+    {
+      current_function_returns_null = 1;
+      bool warned_here;
+      if (TREE_CODE (TREE_TYPE (retval)) != VOID_TYPE)
+	{
+	  error_at
+	    (xloc, "%<return%> with a value, in function returning void");
+	  inform (DECL_SOURCE_LOCATION (current_function_decl),
+		  "declared here");
+	}
+    }
+  else if (TREE_CODE (valtype) != TREE_CODE (retval))
+    {
+      error_at
+	(xloc, "invalid conversion in return statement");
+      inform (DECL_SOURCE_LOCATION (current_function_decl),
+	      "declared here");
+    }
+  return;
 }
 
 #include "gt-c-c-parser.h"
