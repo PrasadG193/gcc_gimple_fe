@@ -18271,7 +18271,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 {
   c_expr lhs, rhs;
   gimple *assign; 
-  enum tree_code subcode;
+  enum tree_code subcode = NOP_EXPR;
   tree save_expr;
   location_t loc, exp_location;
   lhs = c_parser_gimple_unary_expression (parser);
@@ -18804,7 +18804,7 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass)
 static opt_pass *
 c_parser_gimple_pass_list_params (c_parser *parser, opt_pass **pass)
 {
-  opt_pass *pass_start, *new_pass;
+  opt_pass *pass_start = NULL, *new_pass;
   if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
     {
       return NULL;
@@ -19154,7 +19154,6 @@ c_finish_gimple_return (location_t loc, tree retval)
   else if (valtype == 0 || TREE_CODE (valtype) == VOID_TYPE)
     {
       current_function_returns_null = 1;
-      bool warned_here;
       if (TREE_CODE (TREE_TYPE (retval)) != VOID_TYPE)
 	{
 	  error_at
