@@ -18131,13 +18131,13 @@ void
 c_parser_parse_gimple_body (c_parser *parser)
 {
   bool return_p = false;
-  debug_generic_expr (current_function_decl);
+  if (flag_gdebug)
+    debug_generic_expr (current_function_decl);
   gimple_seq seq;
   gimple_seq body;
   tree stmt = push_stmt_list ();
   push_scope ();
   location_t loc1 = c_parser_peek_token (parser)->location;
-  inform (loc1, "start of GIMPLE");
   seq = NULL;
   body = NULL;
   
@@ -18166,7 +18166,8 @@ c_parser_parse_gimple_body (c_parser *parser)
   gimple_seq_add_stmt (&body, bind_stmt);
   gimple_set_body (current_function_decl, body);
   cfun->curr_properties = PROP_gimple_any;
-  debug_gimple_seq (seq);
+  if (flag_gdebug)
+    debug_gimple_seq (seq);
   init_tree_ssa (cfun);
   return;
 }
@@ -18347,8 +18348,8 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       if (subcode == NOP_EXPR)
 	assign = gimple_build_assign (lhs.value, rhs.value);
       else
-	assign = gimple_build_assign (lhs.value, subcode, TREE_OPERAND(rhs.value, 0),
-				      TREE_OPERAND(rhs.value, 1));
+	assign = gimple_build_assign (lhs.value, subcode, TREE_OPERAND (rhs.value, 0),
+				      TREE_OPERAND (rhs.value, 1));
       gimple_seq_add_stmt (seq, assign);
       gimple_set_location (assign, loc);
     }

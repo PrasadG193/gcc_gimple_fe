@@ -204,6 +204,10 @@ fgimple
 C Var(flag_gimple) Init(0)
 Enable parsing GIMPLE
 
+fgimple-debug
+C Var(flag_gdebug) Init(0)
+Produce debug info while parsing GIMPLE
+
 H
 C ObjC C++ ObjC++
 Print the name of header files as they are used.
