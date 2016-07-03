@@ -18199,6 +18199,12 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
     }
   while (c_parser_next_token_is_not (parser, CPP_CLOSE_BRACE))
     {
+      if (parser->error)
+	{
+	  c_parser_skip_until_found (parser, CPP_CLOSE_BRACE, NULL);
+	  goto out;
+	}
+
       if (c_parser_next_token_is (parser, CPP_NAME) 
 	  && c_parser_peek_2nd_token (parser)->type == CPP_COLON)
 	{
@@ -18234,14 +18240,16 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 			{
 			  c_parser_gimple_goto_stmt (loc, c_parser_peek_token (parser)->value, seq);
 			  c_parser_consume_token (parser);
-			  c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<;%>");
+			  if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<;%>"))
+			    goto out;
 			}
 		    }
 		  break;
 		case RID_RETURN:
 		  return_p = true;
 		  c_parser_gimple_return_stmt (parser, seq);
-		  c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<;%>");
+		  if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<;%>"))
+		    goto out;
 		  break;
 		default:
 		  goto expr_stmt;
@@ -18253,11 +18261,10 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 	    default:
 	    expr_stmt:
 	      c_parser_gimple_expression (parser, seq);
-	      c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<;%>");
-	      break;
+	      if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<;%>"))
+		goto out;
 	    }
 	}
-      parser->error = false;
     }
   c_parser_consume_token (parser);
 
@@ -18663,40 +18670,24 @@ c_parser_gimple_postfix_expression (c_parser *parser)
       c_parser_consume_token (parser);
       break;
     case CPP_NAME:
-      switch (c_parser_peek_token (parser)->id_kind)
+      if (c_parser_peek_token (parser)->id_kind == C_ID_ID)
 	{
-	case C_ID_ID:
-	  {
-	    tree id = c_parser_peek_token (parser)->value;
-	    c_parser_consume_token (parser);
-	    expr.value = build_external_ref (loc, id,
-					     (c_parser_peek_token (parser)->type
-					      == CPP_OPEN_PAREN),
-					     &expr.original_type);
-	    set_c_expr_source_range (&expr, tok_range);
-	    break;
-	  }
-	default:
+	  tree id = c_parser_peek_token (parser)->value;
+	  c_parser_consume_token (parser);
+	  expr.value = build_external_ref (loc, id,
+					   (c_parser_peek_token (parser)->type
+					    == CPP_OPEN_PAREN),
+					   &expr.original_type);
+	  set_c_expr_source_range (&expr, tok_range);
+	  break;
+	}
+      else
+	{
 	  c_parser_error (parser, "expected expression");
 	  expr.set_error ();
 	  break;
 	}
       break;
-    case CPP_OPEN_SQUARE:
-      if (c_dialect_objc ())
-	{
-	  tree receiver, args;
-	  c_parser_consume_token (parser);
-	  receiver = c_parser_objc_receiver (parser);
-	  args = c_parser_objc_message_args (parser);
-	  location_t close_loc = c_parser_peek_token (parser)->location;
-	  c_parser_skip_until_found (parser, CPP_CLOSE_SQUARE,
-				     "expected %<]%>");
-	  expr.value = objc_build_message_expr (receiver, args);
-	  set_c_expr_source_range (&expr, loc, close_loc);
-	  break;
-	}
-      /* Else fall through to report error.  */
     default:
       c_parser_error (parser, "expected expression");
       expr.set_error ();
@@ -18720,9 +18711,9 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
   if (c_parser_peek_token (parser)->type == CPP_OPEN_SQUARE)
     {
       c_parser_consume_token (parser);
-      idx = c_parser_expression (parser).value;
-      c_parser_skip_until_found (parser, CPP_CLOSE_SQUARE,
-				 "expected %<]%>");
+      idx = c_parser_gimple_unary_expression (parser).value;
+      if (!c_parser_require (parser, CPP_CLOSE_SQUARE, "expected %<]%>"))
+	goto out;
       start = expr.get_start ();
       finish = parser->tokens_buf[0].location;
       expr.value = build_array_ref (op_loc, expr.value, idx);
@@ -18730,6 +18721,7 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
     }
   expr.original_code = ERROR_MARK;
   expr.original_type = NULL;
+  out:
   return expr;
 }
 
@@ -18774,16 +18766,16 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass)
       if (!strcmp (op, "execute"))
 	{
 	  pass_start = c_parser_gimple_pass_list_params (parser, pass);
-	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
-				     "expected %<)%>");
+	  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
+	    return;
 	  (*pass)->next = NULL;
 	  *pass = pass_start;
 	}
       else if (!strcmp (op, "startwith"))
 	{
 	  *pass = c_parser_gimple_pass_list_params (parser, pass);
-	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
-				     "expected %<)%>");
+	  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
+	    return;
 	}
       else
 	{
@@ -18913,7 +18905,6 @@ c_parser_gimple_declaration (c_parser *parser)
   else
     {
       c_parser_error (parser, "expected %<;%>");
-      c_parser_skip_to_end_of_block_or_statement (parser);
       return;
     }
 }
@@ -18944,12 +18935,12 @@ c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
       label = c_parser_peek_token (parser)->value;
       t_label = lookup_label_for_goto (loc, label);
       c_parser_consume_token (parser);
-      c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<;%>");
+      if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<;%>"))
+	return;
     }
   else
     {
       c_parser_error (parser, "expected goto expression");
-      c_parser_skip_to_end_of_block_or_statement (parser);
       return;
     }
 
@@ -18958,7 +18949,6 @@ c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
   else
     {
       c_parser_error (parser, "expected else statement");
-      c_parser_skip_to_end_of_block_or_statement (parser);
       return;
     }
 
@@ -18969,12 +18959,12 @@ c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
       label = c_parser_peek_token (parser)->value;
       f_label = lookup_label_for_goto (loc, label);
       c_parser_consume_token (parser);
-      c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<;%>");
+      if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<;%>"))
+	return;
     }
   else
     {
       c_parser_error (parser, "expected goto expression");
-      c_parser_skip_to_end_of_block_or_statement (parser);
       return;
     }
 
@@ -18996,8 +18986,9 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 
   if (c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
     {
-      cond_expr = c_parser_unary_expression (parser);
-      c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, "expected %<)%>");
+      cond_expr = c_parser_gimple_unary_expression (parser);
+      if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
+	return;
     }
 
   if (c_parser_require (parser, CPP_OPEN_BRACE, "expected %<{%>"))
@@ -19020,7 +19011,7 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 		  
 		  if (c_parser_next_token_is (parser, CPP_NAME) || 
 		      c_parser_peek_token (parser)->type == CPP_NUMBER)
-		    exp1 = c_parser_unary_expression (parser);
+		    exp1 = c_parser_gimple_unary_expression (parser);
 		  else
 		    c_parser_error (parser, "expected expression");
 
@@ -19034,8 +19025,8 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 		    }
 		  else
 		    {
-		      c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<:%>");
-		      return;
+		      if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<:%>"))
+			return;
 		    }
 		}
 	      break;
@@ -19051,8 +19042,8 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 		    }
 		  else
 		    {
-		      c_parser_skip_until_found (parser, CPP_SEMICOLON, "expected %<:%>");
-		      return;
+		      if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<:%>"))
+			return;
 		    }
 		}
 	      break;
@@ -19069,14 +19060,13 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 		      else
 			{
 			  c_parser_error (parser, "expected semicolon");
-			  c_parser_skip_to_end_of_block_or_statement (parser);
 			  return;
 			}
 		    }
 		  else
 		    {
-		      c_parser_skip_until_found (parser, CPP_NAME, "expected label");
-		      return;
+		      if (!c_parser_require (parser, CPP_NAME, "expected label"))
+			return;
 		    }
 		}
 	      break;
@@ -19087,7 +19077,8 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 
 	}
     }
-  c_parser_skip_until_found (parser, CPP_CLOSE_BRACE, "expected %<}%>");
+  if (!c_parser_require (parser, CPP_CLOSE_BRACE, "expected %<}%>"))
+    return;
   gimple_seq_add_stmt (seq, gimple_build_switch (cond_expr.value, default_label, labels));
   gimple_seq_add_seq (seq, switch_body);
   labels.release();
