@@ -169,6 +169,7 @@ static edge find_taken_edge_computed_goto (basic_block, tree);
 static edge find_taken_edge_cond_expr (basic_block, tree);
 static edge find_taken_edge_switch_expr (gswitch *, basic_block, tree);
 static tree find_case_label_for_value (gswitch *, tree);
+static void lower_phi_internal_fn ();
 
 void
 init_empty_tree_cfg_for_function (struct function *fn)
@@ -243,6 +244,7 @@ build_gimple_cfg (gimple_seq seq)
   discriminator_per_locus = new hash_table<locus_discrim_hasher> (13);
   make_edges ();
   assign_discriminators ();
+  lower_phi_internal_fn ();
   cleanup_dead_labels ();
   delete discriminator_per_locus;
   discriminator_per_locus = NULL;
@@ -344,6 +346,49 @@ replace_loop_annotate (void)
     }
 }
 
+/* Lower internal PHI function from GIMPLE FE */
+static void 
+lower_phi_internal_fn ()
+{
+  basic_block bb, pred;
+  gimple_stmt_iterator gsi;
+  tree lhs;
+  gphi *phi_node;
+  gimple *stmt;
+  int len, capacity;
+  /* After edge creation, handle __PHI function from GIMPLE FE */
+
+  FOR_EACH_BB_FN (bb, cfun)
+    {
+      for (gsi = gsi_start_bb (bb); !gsi_end_p (gsi); gsi_next (&gsi))
+	{
+	  stmt = gsi_stmt (gsi);
+	  if (gimple_code (stmt) != GIMPLE_CALL)
+	    continue;
+
+	  if (gimple_call_internal_p (stmt) && gimple_call_internal_fn (stmt) == IFN_PHI)
+	    {
+	     gsi_remove (&gsi, true);
+	      int i;
+	      lhs = gimple_call_lhs (stmt);
+	      
+	      phi_node = create_phi_node (lhs, bb);
+	      
+	      for (i = 0; i < gimple_call_num_args (stmt); ++i)
+		{
+		  tree arg = gimple_call_arg (stmt, i);
+		  if (TREE_CODE (arg) == LABEL_DECL)
+		    pred = label_to_block (arg);
+		  else
+		    {
+		      edge e = find_edge (pred, bb);
+		      add_phi_arg (phi_node, arg, e, UNKNOWN_LOCATION);
+		    }
+		}
+	    }
+	}
+    }
+}
 
 static unsigned int
 execute_build_cfg (void)
@@ -3338,6 +3383,11 @@ verify_gimple_call (gcall *stmt)
 	  error ("gimple call has two targets");
 	  debug_generic_stmt (fn);
 	  return true;
+	}
+      /* FIXME : for passing label as arg in internal fn PHI from GIMPLE FE*/
+      else if (gimple_call_internal_fn (stmt) == IFN_PHI)     	
+	{
+	  return false;
 	}
     }
   else

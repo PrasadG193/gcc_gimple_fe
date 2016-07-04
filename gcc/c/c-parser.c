@@ -18345,6 +18345,57 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       return;
     }
 
+  if (c_parser_next_token_is_keyword (parser, RID_PHI))
+    {
+      c_parser_consume_token (parser);
+      
+      if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
+	{
+	  return;
+	}
+
+      gcall *call_stmt;
+      /* Gimplify internal functions. */
+      tree arg;
+      vec<tree> vargs = vNULL;
+
+      if (c_parser_next_token_is (parser, CPP_OPEN_PAREN))
+	c_parser_consume_token (parser);
+      
+      while (c_parser_next_token_is_not (parser, CPP_CLOSE_PAREN))
+	{
+	  if (c_parser_next_token_is (parser, CPP_NAME) &&
+	      c_parser_peek_2nd_token (parser)->type == CPP_COLON)
+	    {
+	      arg = lookup_label_for_goto (c_parser_peek_token (parser)->location, 
+					   c_parser_peek_token (parser)->value);
+	      c_parser_consume_token (parser);
+
+	      if (c_parser_next_token_is (parser, CPP_COLON))
+		c_parser_consume_token (parser);
+	      vargs.safe_push (arg);
+	    }
+	  else if (c_parser_next_token_is (parser, CPP_COMMA))
+	    {
+	      c_parser_consume_token (parser);
+	    }
+	  else
+	    {
+	      arg = c_parser_gimple_unary_expression (parser).value;
+	      vargs.safe_push (arg);
+	    }
+	}
+
+      c_parser_skip_until_found (parser, CPP_CLOSE_PAREN,
+				 "expected %<)%>");
+
+      call_stmt = gimple_build_call_internal_vec (IFN_PHI, vargs);
+      gimple_call_set_lhs (call_stmt, lhs.value);
+      gimple_set_location (call_stmt, UNKNOWN_LOCATION);
+      gimple_seq_add_stmt (seq, call_stmt);
+      return;
+    }
+
   exp_location = c_parser_peek_token (parser)->location;
   rhs = c_parser_gimple_binary_expression (parser, &subcode);
   rhs = convert_lvalue_to_rvalue (exp_location, rhs, true, true);

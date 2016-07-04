@@ -114,7 +114,8 @@ pass_manager::execute_early_local_passes ()
   execute_pass_list (cfun, pass_build_ssa_passes_1->sub);
   if (flag_check_pointer_bounds)
     execute_pass_list (cfun, pass_chkp_instrumentation_passes_1->sub);
-  execute_pass_list (cfun, pass_local_optimization_passes_1->sub);
+  if (flag_gimple && cfun->custom_pass_list)
+    execute_pass_list (cfun, pass_local_optimization_passes_1->sub);
 }
 
 unsigned int

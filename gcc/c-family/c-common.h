@@ -107,6 +107,9 @@ enum rid
   /* "__GIMPLE", for the GIMPLE-parsing extension to the C frontend. */
   RID_GIMPLE,
 
+  /* "__PHI", for parsing PHI function in GIMPLE FE */
+  RID_PHI,
+
   /* C11 */
   RID_ALIGNAS, RID_GENERIC,
 
