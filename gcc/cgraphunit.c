@@ -1980,10 +1980,7 @@ cgraph_node::expand (void)
   /* Signal the start of passes.  */
   invoke_plugin_callbacks (PLUGIN_ALL_PASSES_START, NULL);
 
-  if (flag_gimple && cfun->custom_pass_list)
-    execute_pass_list (cfun, cfun->custom_pass_list);
-  else
-    execute_pass_list (cfun, g->get_passes ()->all_passes);
+  execute_pass_list (cfun, g->get_passes ()->all_passes, true);
 
   /* Signal the end of passes.  */
   invoke_plugin_callbacks (PLUGIN_ALL_PASSES_END, NULL);
@@ -2037,7 +2034,7 @@ cgraph_node::expand (void)
 
   /* Make sure that BE didn't give up on compiling.  */
 
-  if (!(flag_gimple && cfun->custom_pass_list))	/* FIXME : for gimplefe custom_pass_list */
+  if (!(flag_gimple && cfun->pass_startwith))	/* FIXME : for gimplefe custom_pass_list */
     gcc_assert (TREE_ASM_WRITTEN (decl));
   
   if (cfun)

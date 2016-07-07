@@ -114,7 +114,7 @@ pass_manager::execute_early_local_passes ()
   execute_pass_list (cfun, pass_build_ssa_passes_1->sub);
   if (flag_check_pointer_bounds)
     execute_pass_list (cfun, pass_chkp_instrumentation_passes_1->sub);
-  if (flag_gimple && cfun->custom_pass_list)
+  if (!flag_gimple && !cfun->pass_startwith)
     execute_pass_list (cfun, pass_local_optimization_passes_1->sub);
 }
 
@@ -2281,8 +2281,18 @@ override_gate_status (opt_pass *pass, tree func, bool gate_status)
 /* Execute PASS. */
 
 bool
-execute_one_pass (opt_pass *pass)
+execute_one_pass (opt_pass *pass, bool startwith_p)
 {
+  /* For skipping passes until startwith pass */
+  if (startwith_p && cfun->startwith)
+    {
+      if (pass->name == cfun->pass_startwith->name
+	  || pass->name == "*clean_state")
+	cfun->startwith = false;
+      else
+	return true;
+    }
+
   unsigned int todo_after = 0;
 
   bool gate_status;
@@ -2419,7 +2429,7 @@ execute_one_pass (opt_pass *pass)
 }
 
 static void
-execute_pass_list_1 (opt_pass *pass)
+execute_pass_list_1 (opt_pass *pass, bool startwith_p)
 {
   do
     {
@@ -2428,18 +2438,18 @@ execute_pass_list_1 (opt_pass *pass)
 
       if (cfun == NULL)
 	return;
-      if (execute_one_pass (pass) && pass->sub)
-        execute_pass_list_1 (pass->sub);
+      if (execute_one_pass (pass, startwith_p) && pass->sub)
+	execute_pass_list_1 (pass->sub, startwith_p);
       pass = pass->next;
     }
   while (pass);
 }
 
 void
-execute_pass_list (function *fn, opt_pass *pass)
+execute_pass_list (function *fn, opt_pass *pass, bool startwith_p)
 {
   gcc_assert (fn == cfun);
-  execute_pass_list_1 (pass);
+  execute_pass_list_1 (pass, startwith_p);
   if (cfun && fn->cfg)
     {
       free_dominance_info (CDI_DOMINATORS);

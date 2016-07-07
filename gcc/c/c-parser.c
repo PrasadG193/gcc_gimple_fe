@@ -1413,7 +1413,7 @@ static c_expr c_parser_gimple_unary_expression (c_parser *);
 static struct c_expr c_parser_gimple_postfix_expression (c_parser *);
 static struct c_expr c_parser_gimple_postfix_expression_after_primary (c_parser *,
 								       struct c_expr);
-static void c_parser_gimple_pass_list (c_parser *, opt_pass **);
+static void c_parser_gimple_pass_list (c_parser *, opt_pass **, bool *);
 static opt_pass *c_parser_gimple_pass_list_params (c_parser *, opt_pass **);
 static void c_parser_gimple_declaration (c_parser *);
 static void c_parser_gimple_goto_stmt (location_t, tree, gimple_seq *);
@@ -1666,6 +1666,7 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
   location_t here = c_parser_peek_token (parser)->location;
   bool gimple_body_p = false;
   opt_pass *pass = NULL;
+  bool startwith_p;
 
   if (static_assert_ok
       && c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT))
@@ -1722,8 +1723,9 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
       if (kw_token->keyword == RID_GIMPLE)
 	{
 	  gimple_body_p = true;
+	  startwith_p = false;
 	  c_parser_consume_token (parser);
-	  c_parser_gimple_pass_list (parser, &pass);
+	  c_parser_gimple_pass_list (parser, &pass, &startwith_p);
 	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
 				     "expected %<)%>");
 	}
@@ -2137,7 +2139,10 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
       store_parm_decls ();
 
       if (pass)
-	cfun->custom_pass_list = pass;
+	{
+	  cfun->pass_startwith = pass;
+	  cfun->startwith = startwith_p;
+	}
 
       if (omp_declare_simd_clauses.exists ()
 	  || !vec_safe_is_empty (parser->cilk_simd_fn_tokens))
@@ -18797,9 +18802,8 @@ c_parser_gimple_label (c_parser *parser, gimple_seq *seq)
 /* Parse gimple pass list */
 
 static void 
-c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass)
+c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass, bool *startwith_p)
 {
-  opt_pass *pass_start;
   if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
     {
       return;
@@ -18814,17 +18818,11 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass)
     {
       const char *op = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
       c_parser_consume_token (parser);
-      if (!strcmp (op, "execute"))
-	{
-	  pass_start = c_parser_gimple_pass_list_params (parser, pass);
-	  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
-	    return;
-	  (*pass)->next = NULL;
-	  *pass = pass_start;
-	}
-      else if (!strcmp (op, "startwith"))
+      if (!strcmp (op, "startwith"))
 	{
 	  *pass = c_parser_gimple_pass_list_params (parser, pass);
+	  (*pass)->next = NULL;
+	  *startwith_p = true;
 	  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
 	    return;
 	}
