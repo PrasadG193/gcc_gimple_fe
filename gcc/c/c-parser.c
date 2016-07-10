@@ -18821,7 +18821,8 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass, bool *startwith_p)
       if (!strcmp (op, "startwith"))
 	{
 	  *pass = c_parser_gimple_pass_list_params (parser, pass);
-	  (*pass)->next = NULL;
+	  if (!(*pass))
+	    return;
 	  *startwith_p = true;
 	  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
 	    return;
@@ -18874,6 +18875,7 @@ c_parser_gimple_pass_list_params (c_parser *parser, opt_pass **pass)
 	  if (!new_pass)
 	    {
 	      error_at (c_parser_peek_token (parser)->location, "invalid pass name");
+	      parser->error = true;
 	      c_parser_consume_token (parser);
 	      return NULL;
 	    }

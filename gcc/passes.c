@@ -114,8 +114,7 @@ pass_manager::execute_early_local_passes ()
   execute_pass_list (cfun, pass_build_ssa_passes_1->sub);
   if (flag_check_pointer_bounds)
     execute_pass_list (cfun, pass_chkp_instrumentation_passes_1->sub);
-  if (!flag_gimple && !cfun->pass_startwith)
-    execute_pass_list (cfun, pass_local_optimization_passes_1->sub);
+  execute_pass_list (cfun, pass_local_optimization_passes_1->sub);
 }
 
 unsigned int
@@ -1686,12 +1685,13 @@ remove_cgraph_node_from_order (cgraph_node *node, void *data)
    call CALLBACK on the current function.
    This function is global so that plugins can use it.  */
 void
-do_per_function_toporder (void (*callback) (function *, void *data), void *data)
+do_per_function_toporder (void (*callback) (function *, void *data, void *flag), 
+			  void *data, void *flag)
 {
   int i;
 
   if (current_function_decl)
-    callback (cfun, data);
+    callback (cfun, data, flag);
   else
     {
       cgraph_node_hook_list *hook;
@@ -1726,7 +1726,7 @@ do_per_function_toporder (void (*callback) (function *, void *data), void *data)
 	    {
 	      struct function *fn = DECL_STRUCT_FUNCTION (node->decl);
 	      push_cfun (fn);
-	      callback (fn, data);
+	      callback (fn, data, flag);
 	      pop_cfun ();
 	    }
 	}
@@ -2284,10 +2284,10 @@ bool
 execute_one_pass (opt_pass *pass, bool startwith_p)
 {
   /* For skipping passes until startwith pass */
-  if (startwith_p && cfun->startwith)
+  if (cfun && startwith_p && cfun->startwith)
     {
-      if (pass->name == cfun->pass_startwith->name
-	  || pass->name == "*clean_state")
+      if (!strcmp (pass->name, cfun->pass_startwith->name)
+	  || !strcmp (pass->name, "*clean_state"))
 	cfun->startwith = false;
       else
 	return true;
@@ -2446,10 +2446,15 @@ execute_pass_list_1 (opt_pass *pass, bool startwith_p)
 }
 
 void
-execute_pass_list (function *fn, opt_pass *pass, bool startwith_p)
+execute_pass_list (function *fn, opt_pass *pass, bool *startwith_p)
 {
   gcc_assert (fn == cfun);
-  execute_pass_list_1 (pass, startwith_p);
+
+  if (startwith_p)
+    execute_pass_list_1 (pass, *startwith_p);
+  else
+    execute_pass_list_1 (pass, false);
+
   if (cfun && fn->cfg)
     {
       free_dominance_info (CDI_DOMINATORS);
@@ -2779,19 +2784,22 @@ ipa_read_optimization_summaries (void)
 void
 execute_ipa_pass_list (opt_pass *pass)
 {
+  bool startwith_p = false;
   do
     {
       gcc_assert (!current_function_decl);
       gcc_assert (!cfun);
       gcc_assert (pass->type == SIMPLE_IPA_PASS || pass->type == IPA_PASS);
-      if (execute_one_pass (pass) && pass->sub)
+      if (!strcmp (pass->name, "opt_local_passes"))
+	startwith_p = true;
+      if (execute_one_pass (pass, startwith_p) && pass->sub)
 	{
 	  if (pass->sub->type == GIMPLE_PASS)
 	    {
 	      invoke_plugin_callbacks (PLUGIN_EARLY_GIMPLE_PASSES_START, NULL);
-	      do_per_function_toporder ((void (*)(function *, void *))
+	      do_per_function_toporder ((void (*)(function *, void *, void *))
 					  execute_pass_list,
-					pass->sub);
+					pass->sub, &startwith_p);      
 	      invoke_plugin_callbacks (PLUGIN_EARLY_GIMPLE_PASSES_END, NULL);
 	    }
 	  else if (pass->sub->type == SIMPLE_IPA_PASS
