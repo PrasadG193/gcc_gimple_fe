@@ -901,10 +901,14 @@ dump_gimple_cond (pretty_printer *buffer, gcond *gs, int spc, int flags)
    TDF_* in dumpfils.h).  */
 
 static void
-dump_gimple_label (pretty_printer *buffer, glabel *gs)
+dump_gimple_label (pretty_printer *buffer, glabel *gs, int spc, int flags)
 {
   tree label = gimple_label_label (gs);
-  pp_printf (buffer, "label_%i:", LABEL_DECL_UID (label));
+  if (flags && TDF_RAW)
+    dump_gimple_fmt (buffer, spc, flags, "%T", label);
+  else
+    dump_generic_node (buffer, label, spc, flags, false);
+  pp_colon (buffer);
 }
 
 /* Dump a GIMPLE_GOTO tuple on the pretty_printer BUFFER, SPC
@@ -2246,7 +2250,7 @@ pp_gimple_stmt_1 (pretty_printer *buffer, gimple *gs, int spc, int flags)
       break;
 
     case GIMPLE_LABEL:
-      dump_gimple_label (buffer, as_a <glabel *> (gs));
+      dump_gimple_label (buffer, as_a <glabel *> (gs), spc, flags);
       break;
 
     case GIMPLE_GOTO:
