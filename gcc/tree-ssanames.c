@@ -255,7 +255,7 @@ flush_ssaname_freelist (void)
    used without a preceding definition).  */
 
 tree
-make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, int version)
+make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, unsigned int version)
 {
   tree t;
   use_operand_p imm;
@@ -269,7 +269,8 @@ make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, int version)
     {
       t = make_node (SSA_NAME);
       SSA_NAME_VERSION (t) = version;
-      vec_safe_grow_cleared (SSANAMES (fn), version + 1);
+      if (version >= SSANAMES (fn)->length ())
+	vec_safe_grow_cleared (SSANAMES (fn), version + 1);
       gcc_assert ((*SSANAMES (fn))[version] == NULL);
       (*SSANAMES (fn))[version] = t;
       ssa_name_nodes_created++;

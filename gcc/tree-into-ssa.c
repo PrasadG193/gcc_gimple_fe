@@ -1386,7 +1386,7 @@ rewrite_add_phi_arguments (basic_block bb)
 	  /* If we have pre-existing PHI its args may be different 
 	     vars than existing vars */
 	  argvar = gimple_phi_arg_def (phi, e->dest_idx);
-	  if (TREE_CODE (argvar) == SSA_NAME)
+	  if (argvar && TREE_CODE (argvar) == SSA_NAME)
 	    continue;
 	  if (!argvar)
 	    argvar = SSA_NAME_VAR (res);
