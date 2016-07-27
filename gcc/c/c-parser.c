@@ -66,6 +66,8 @@ along with GCC; see the file COPYING3.  If not see
 #include "gimple-pretty-print.h"
 #include "tree-ssa.h"
 #include "pass_manager.h"
+#include "tree-ssanames.h"
+#include "gimple-ssa.h"
 
 /* We need to walk over decls with incomplete struct/union/enum types
    after parsing the whole translation unit.
@@ -1666,7 +1668,7 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
   location_t here = c_parser_peek_token (parser)->location;
   bool gimple_body_p = false;
   opt_pass *pass = NULL;
-  bool startwith_p;
+  bool startwith_p = false;
 
   if (static_assert_ok
       && c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT))
@@ -1723,7 +1725,6 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
       if (kw_token->keyword == RID_GIMPLE)
 	{
 	  gimple_body_p = true;
-	  startwith_p = false;
 	  c_parser_consume_token (parser);
 	  c_parser_gimple_pass_list (parser, &pass, &startwith_p);
 	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN, 
@@ -18145,7 +18146,7 @@ c_parser_parse_gimple_body (c_parser *parser)
   location_t loc1 = c_parser_peek_token (parser)->location;
   seq = NULL;
   body = NULL;
-  
+  init_tree_ssa (cfun);
   return_p = c_parser_gimple_compound_statement (parser, &seq);
 
   if (!return_p)
@@ -18173,7 +18174,6 @@ c_parser_parse_gimple_body (c_parser *parser)
   cfun->curr_properties = PROP_gimple_any;
   if (flag_gdebug)
     debug_gimple_seq (seq);
-  init_tree_ssa (cfun);
   return;
 }
 
@@ -18361,7 +18361,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 
       gcall *call_stmt;
       /* Gimplify internal functions. */
-      tree arg;
+      tree arg = NULL_TREE;
       vec<tree> vargs = vNULL;
 
       if (c_parser_next_token_is (parser, CPP_OPEN_PAREN))
@@ -18386,7 +18386,29 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 	    }
 	  else
 	    {
-	      arg = c_parser_gimple_unary_expression (parser).value;
+	      /* Parse ssa names */
+	      tree id;
+	      char *var_name, *var_version, *token;
+	      const char *ssa_token = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
+	      token = new char [strlen (ssa_token)];
+	      strcpy (token, ssa_token);
+	      var_name = strtok (token, "_");
+	      id = get_identifier (var_name);
+	      if (lookup_name (id))
+		{
+		  unsigned int version;
+		  var_version = strtok (NULL, "_");
+		  version = atoi (var_version);
+		  if (var_version && version)
+		    {
+		      arg = NULL_TREE;
+		      if (version < num_ssa_names)
+			arg = ssa_name (version);
+		      if (!arg)
+			arg = make_ssa_name_fn (cfun, lookup_name (id), gimple_build_nop (), version);
+		      c_parser_consume_token (parser);
+		    }
+		}
 	      vargs.safe_push (arg);
 	    }
 	}
@@ -18481,7 +18503,7 @@ c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
     sp--;								      \
   } while (0)
   stack[0].loc = c_parser_peek_token (parser)->location;
-  stack[0].expr = c_parser_cast_expression (parser, NULL);
+  stack[0].expr = c_parser_gimple_unary_expression (parser);
   stack[0].prec = PREC_NONE;
   sp = 0;
   enum c_parser_prec oprec;
@@ -18601,7 +18623,7 @@ c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
     }
   sp++;
   stack[sp].loc = binary_loc;
-  stack[sp].expr = c_parser_cast_expression (parser, NULL);
+  stack[sp].expr = c_parser_gimple_unary_expression (parser);
   stack[sp].prec = oprec;
   stack[sp].op = *subcode;
 out:
@@ -18618,6 +18640,34 @@ static c_expr
 c_parser_gimple_unary_expression (c_parser *parser)
 {
   struct c_expr ret, op;
+  /* Parse ssa names */
+  if (TREE_CODE (c_parser_peek_token (parser)->value) == IDENTIFIER_NODE
+      && !lookup_name (c_parser_peek_token (parser)->value))
+    {
+      tree id;
+      char *var_name, *var_version, *token;
+      const char *ssa_token = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
+      token = new char [strlen (ssa_token)];
+      strcpy (token, ssa_token);
+      var_name = strtok (token, "_");
+      id = get_identifier (var_name);
+      if (lookup_name (id))
+	{
+	  var_version = strtok (NULL, "_");
+	  unsigned int version;
+	  version = atoi (var_version);
+	  if (var_version && version)
+	    {
+	      ret.value = NULL_TREE;
+	      if (version < num_ssa_names)
+		ret.value = ssa_name (version);
+	      if (!ret.value)
+		ret.value = make_ssa_name_fn (cfun, lookup_name (id), gimple_build_nop (), version);
+	      c_parser_consume_token (parser);
+	    }
+	}
+      return ret;
+    }
   location_t op_loc = c_parser_peek_token (parser)->location;
   location_t exp_loc;
   location_t finish;
@@ -18868,7 +18918,7 @@ c_parser_gimple_pass_list_params (c_parser *parser, opt_pass **pass)
 
       if (c_parser_next_token_is (parser, CPP_STRING))
 	{
-	  const char *name = TREE_STRING_POINTER(c_parser_peek_token (parser)->value);
+	  const char *name = TREE_STRING_POINTER (c_parser_peek_token (parser)->value);
 	  c_parser_consume_token (parser);
 	  new_pass = g->get_passes ()->get_pass_by_name (name);
 

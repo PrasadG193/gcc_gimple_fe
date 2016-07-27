@@ -347,6 +347,7 @@ replace_loop_annotate (void)
 }
 
 /* Lower internal PHI function from GIMPLE FE */
+
 static void 
 lower_phi_internal_fn ()
 {
@@ -356,8 +357,8 @@ lower_phi_internal_fn ()
   gphi *phi_node;
   gimple *stmt;
   int len, capacity;
-  /* After edge creation, handle __PHI function from GIMPLE FE */
 
+  /* After edge creation, handle __PHI function from GIMPLE FE */
   FOR_EACH_BB_FN (bb, cfun)
     {
       for (gsi = gsi_start_bb (bb); !gsi_end_p (gsi); gsi_next (&gsi))
@@ -368,12 +369,10 @@ lower_phi_internal_fn ()
 
 	  if (gimple_call_internal_p (stmt) && gimple_call_internal_fn (stmt) == IFN_PHI)
 	    {
-	     gsi_remove (&gsi, true);
+	      gsi_remove (&gsi, true);
 	      int i;
 	      lhs = gimple_call_lhs (stmt);
-	      
 	      phi_node = create_phi_node (lhs, bb);
-	      
 	      for (i = 0; i < gimple_call_num_args (stmt); ++i)
 		{
 		  tree arg = gimple_call_arg (stmt, i);
@@ -7625,7 +7624,7 @@ dump_function_to_file (tree fndecl, FILE *file, int flags)
 	for (ix = 1; ix < num_ssa_names; ++ix)
 	  {
 	    tree name = ssa_name (ix);
-	    if (!virtual_operand_p (name))
+	    if (name && !SSA_NAME_VAR (name))
 	      {
 		fprintf (file, "  ");
 		print_generic_expr (file, TREE_TYPE (name), flags);

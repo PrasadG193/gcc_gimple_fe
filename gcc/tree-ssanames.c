@@ -255,7 +255,7 @@ flush_ssaname_freelist (void)
    used without a preceding definition).  */
 
 tree
-make_ssa_name_fn (struct function *fn, tree var, gimple *stmt)
+make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, int version)
 {
   tree t;
   use_operand_p imm;
@@ -265,8 +265,17 @@ make_ssa_name_fn (struct function *fn, tree var, gimple *stmt)
 	      || TREE_CODE (var) == RESULT_DECL
 	      || (TYPE_P (var) && is_gimple_reg_type (var)));
 
+  if (version != 0)
+    {
+      t = make_node (SSA_NAME);
+      SSA_NAME_VERSION (t) = version;
+      vec_safe_grow_cleared (SSANAMES (fn), version + 1);
+      gcc_assert ((*SSANAMES (fn))[version] == NULL);
+      (*SSANAMES (fn))[version] = t;
+      ssa_name_nodes_created++;
+    }
   /* If our free list has an element, then use it.  */
-  if (!vec_safe_is_empty (FREE_SSANAMES (fn)))
+  else if (!vec_safe_is_empty (FREE_SSANAMES (fn)))
     {
       t = FREE_SSANAMES (fn)->pop ();
       ssa_name_nodes_reused++;
