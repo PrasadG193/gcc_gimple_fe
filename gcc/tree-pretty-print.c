@@ -2704,6 +2704,10 @@ dump_generic_node (pretty_printer *pp, tree node, int spc, int flags,
 	}
       pp_underscore (pp);
       pp_decimal_int (pp, SSA_NAME_VERSION (node));
+      if (SSA_NAME_IS_DEFAULT_DEF (node))
+	pp_string (pp, "(D)");
+      if (SSA_NAME_OCCURS_IN_ABNORMAL_PHI (node))
+	pp_string (pp, "(ab)");
       break;
 
     case WITH_SIZE_EXPR:

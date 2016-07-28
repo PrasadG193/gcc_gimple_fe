@@ -68,6 +68,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "pass_manager.h"
 #include "tree-ssanames.h"
 #include "gimple-ssa.h"
+#include "tree-dfa.h"
 
 /* We need to walk over decls with incomplete struct/union/enum types
    after parsing the whole translation unit.
@@ -18685,7 +18686,7 @@ c_parser_gimple_unary_expression (c_parser *parser)
 static c_expr
 c_parser_parse_ssa_names (c_parser *parser)
 {
-  tree id;
+  tree id = NULL_TREE;
   c_expr ret;
   char *var_name, *var_version, *token;
   ret.original_code = ERROR_MARK;
@@ -18715,6 +18716,17 @@ c_parser_parse_ssa_names (c_parser *parser)
 	      c_parser_consume_token (parser);
 	    }
 	}
+    }
+  if (c_parser_next_token_is (parser, CPP_OPEN_PAREN))
+    {
+      c_parser_consume_token (parser);
+      if (!strcmp ("D",IDENTIFIER_POINTER (c_parser_peek_token (parser)->value)))
+	{
+	  set_ssa_default_def (cfun, lookup_name (id), ret.value);
+	  c_parser_consume_token (parser);
+	}
+      if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
+	return ret;
     }
   return ret;
 }
@@ -19248,7 +19260,7 @@ c_finish_gimple_return (location_t loc, tree retval)
 		  "declared here");
 	}
     }
-  else if (TREE_CODE (valtype) != TREE_CODE (retval))
+  else if (TREE_CODE (valtype) != TREE_CODE (TREE_TYPE (retval)))
     {
       error_at
 	(xloc, "invalid conversion in return statement");
