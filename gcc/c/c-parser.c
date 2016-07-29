@@ -18619,7 +18619,8 @@ static c_expr
 c_parser_gimple_unary_expression (c_parser *parser)
 {
   struct c_expr ret, op;
-  if (TREE_CODE (c_parser_peek_token (parser)->value) == IDENTIFIER_NODE
+  if (c_parser_peek_token (parser)->value 
+      && TREE_CODE (c_parser_peek_token (parser)->value) == IDENTIFIER_NODE
       && !lookup_name (c_parser_peek_token (parser)->value))
     return c_parser_parse_ssa_names (parser);
 
