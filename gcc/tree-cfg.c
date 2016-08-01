@@ -7620,6 +7620,16 @@ dump_function_to_file (tree fndecl, FILE *file, int flags)
 	    }
 	}
 
+      if (!vec_safe_is_empty (fun->local_decls))
+	FOR_EACH_LOCAL_DECL (fun, ix,var)
+	  {
+	    print_generic_decl (file, var, flags);
+	    if (flags & TDF_VERBOSE)
+	      print_node (file, "", var, 4);
+	    fprintf (file, "\n");
+
+	    any_var = true;
+	  }
       if (gimple_in_ssa_p (cfun))
 	for (ix = 1; ix < num_ssa_names; ++ix)
 	  {
