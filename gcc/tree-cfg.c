@@ -351,12 +351,11 @@ replace_loop_annotate (void)
 static void 
 lower_phi_internal_fn ()
 {
-  basic_block bb, pred;
+  basic_block bb, pred = NULL;
   gimple_stmt_iterator gsi;
   tree lhs;
   gphi *phi_node;
   gimple *stmt;
-  int len, capacity;
 
   /* After edge creation, handle __PHI function from GIMPLE FE */
   FOR_EACH_BB_FN (bb, cfun)
@@ -370,7 +369,7 @@ lower_phi_internal_fn ()
 	  if (gimple_call_internal_p (stmt) && gimple_call_internal_fn (stmt) == IFN_PHI)
 	    {
 	      gsi_remove (&gsi, true);
-	      int i;
+	      unsigned int i;
 	      lhs = gimple_call_lhs (stmt);
 	      phi_node = create_phi_node (lhs, bb);
 	      for (i = 0; i < gimple_call_num_args (stmt); ++i)
