@@ -1425,6 +1425,7 @@ static void c_parser_gimple_switch_stmt (c_parser *, gimple_seq *);
 static void c_parser_gimple_return_stmt (c_parser *, gimple_seq *);
 static void c_finish_gimple_return (location_t, tree);
 static c_expr c_parser_parse_ssa_names (c_parser *);
+static tree c_parser_gimple_paren_condition (c_parser *);
 
 /* Parse a translation unit (C90 6.7, C99 6.9).
 
@@ -2158,7 +2159,10 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
       
       if (gimple_body_p && flag_gimple)
 	{
+	  bool saved = in_late_binary_op;
+	  in_late_binary_op = true;
 	  c_parser_parse_gimple_body (parser);
+	  in_late_binary_op = saved;
 	  cgraph_node::finalize_function (current_function_decl, false);
 	  timevar_pop (tv);
 	  return;
@@ -19025,6 +19029,23 @@ c_parser_gimple_goto_stmt (location_t loc, tree label, gimple_seq *seq)
   return;
 }
 
+/* Parse a parenthesized condition */
+
+static tree
+c_parser_gimple_paren_condition (c_parser *parser)
+{
+  tree cond;
+  enum tree_code subcode = NOP_EXPR;
+  location_t loc = c_parser_peek_token (parser)->location;
+  if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
+    return error_mark_node;
+  cond = c_parser_gimple_binary_expression (parser, &subcode).value;
+  cond = c_objc_common_truthvalue_conversion (loc, cond);
+  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
+    return error_mark_node;
+  return cond;
+}
+
 /* Parse gimple if-else statement */
 
 static void 
@@ -19033,7 +19054,7 @@ c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
   tree cond, t_label, f_label, label;
   location_t loc;
   c_parser_consume_token (parser);
-  cond = c_parser_paren_condition (parser);
+  cond = c_parser_gimple_paren_condition (parser);
 
   if (c_parser_next_token_is_keyword (parser, RID_GOTO))
     {
