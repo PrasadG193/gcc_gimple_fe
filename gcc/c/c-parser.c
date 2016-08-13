@@ -1427,6 +1427,9 @@ static void c_parser_gimple_return_stmt (c_parser *, gimple_seq *);
 static void c_finish_gimple_return (location_t, tree);
 static c_expr c_parser_parse_ssa_names (c_parser *);
 static tree c_parser_gimple_paren_condition (c_parser *);
+static vec<tree, va_gc> *c_parser_gimple_expr_list (c_parser *, bool,
+		    vec<tree, va_gc> **, location_t *, tree *,
+		    vec<location_t> *, unsigned int *);
 
 /* Parse a translation unit (C90 6.7, C99 6.9).
 
@@ -18892,7 +18895,7 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
 	  if (c_parser_next_token_is (parser, CPP_CLOSE_PAREN))
 	    exprlist = NULL;
 	  else
-	    exprlist = c_parser_expr_list (parser, true, false, &origtypes,
+	    exprlist = c_parser_gimple_expr_list (parser, true, &origtypes,
 					   sizeof_arg_loc, sizeof_arg,
 					   &arg_loc, &literal_zero_mask);
 	  c_parser_skip_until_found (parser, CPP_CLOSE_PAREN,
@@ -18941,6 +18944,81 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
 	}
     }
   return expr;
+}
+
+/* Parse expression list */
+
+static vec<tree, va_gc> *
+c_parser_gimple_expr_list (c_parser *parser, bool convert_p,
+		    vec<tree, va_gc> **p_orig_types,
+		    location_t *sizeof_arg_loc, tree *sizeof_arg,
+		    vec<location_t> *locations,
+		    unsigned int *literal_zero_mask)
+{
+  vec<tree, va_gc> *ret;
+  vec<tree, va_gc> *orig_types;
+  struct c_expr expr;
+  location_t loc = c_parser_peek_token (parser)->location;
+  location_t cur_sizeof_arg_loc = UNKNOWN_LOCATION;
+  unsigned int idx = 0;
+
+  ret = make_tree_vector ();
+  if (p_orig_types == NULL)
+    orig_types = NULL;
+  else
+    orig_types = make_tree_vector ();
+
+  if (sizeof_arg != NULL
+      && c_parser_next_token_is_keyword (parser, RID_SIZEOF))
+    cur_sizeof_arg_loc = c_parser_peek_2nd_token (parser)->location;
+  if (literal_zero_mask)
+    c_parser_check_literal_zero (parser, literal_zero_mask, 0);
+  expr = c_parser_gimple_unary_expression (parser);
+  if (convert_p)
+    expr = convert_lvalue_to_rvalue (loc, expr, true, true);
+  ret->quick_push (expr.value);
+  if (orig_types)
+    orig_types->quick_push (expr.original_type);
+  if (locations)
+    locations->safe_push (loc);
+  if (sizeof_arg != NULL
+      && cur_sizeof_arg_loc != UNKNOWN_LOCATION
+      && expr.original_code == SIZEOF_EXPR)
+    {
+      sizeof_arg[0] = c_last_sizeof_arg;
+      sizeof_arg_loc[0] = cur_sizeof_arg_loc;
+    }
+  while (c_parser_next_token_is (parser, CPP_COMMA))
+    {
+      c_parser_consume_token (parser);
+      loc = c_parser_peek_token (parser)->location;
+      if (sizeof_arg != NULL
+	  && c_parser_next_token_is_keyword (parser, RID_SIZEOF))
+	cur_sizeof_arg_loc = c_parser_peek_2nd_token (parser)->location;
+      else
+	cur_sizeof_arg_loc = UNKNOWN_LOCATION;
+      if (literal_zero_mask)
+	c_parser_check_literal_zero (parser, literal_zero_mask, idx + 1);
+      expr = c_parser_gimple_unary_expression (parser);
+      if (convert_p)
+	expr = convert_lvalue_to_rvalue (loc, expr, true, true);
+      vec_safe_push (ret, expr.value);
+      if (orig_types)
+	vec_safe_push (orig_types, expr.original_type);
+      if (locations)
+	locations->safe_push (loc);
+      if (++idx < 3
+	  && sizeof_arg != NULL
+	  && cur_sizeof_arg_loc != UNKNOWN_LOCATION
+	  && expr.original_code == SIZEOF_EXPR)
+	{
+	  sizeof_arg[idx] = c_last_sizeof_arg;
+	  sizeof_arg_loc[idx] = cur_sizeof_arg_loc;
+	}
+    }
+  if (orig_types)
+    *p_orig_types = orig_types;
+  return ret;
 }
 
 /* Parse gimple label */
