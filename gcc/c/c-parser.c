@@ -18424,7 +18424,8 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 
 
   if (c_parser_next_token_is (parser, CPP_NAME) && 
-      c_parser_peek_2nd_token (parser)->type == CPP_OPEN_PAREN)
+      c_parser_peek_2nd_token (parser)->type == CPP_OPEN_PAREN &&
+      lookup_name (c_parser_peek_token (parser)->value))
     {
       gimple *call;
       rhs = c_parser_gimple_unary_expression (parser);
