@@ -2305,8 +2305,6 @@ execute_one_pass (opt_pass *pass, bool startwith_p)
     gcc_assert (cfun && current_function_decl);
 
   current_pass = pass;
-  if (flag_gdebug)
-    debug_pass ();
 
   /* Check whether gate check should be avoided.
      User controls the value of the gate through the parameter "gate_status". */

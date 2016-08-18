@@ -18148,8 +18148,6 @@ void
 c_parser_parse_gimple_body (c_parser *parser)
 {
   bool return_p = false;
-  if (flag_gdebug)
-    debug_generic_expr (current_function_decl);
   gimple_seq seq;
   gimple_seq body;
   tree stmt = push_stmt_list ();
@@ -18183,8 +18181,7 @@ c_parser_parse_gimple_body (c_parser *parser)
   gimple_seq_add_stmt (&body, bind_stmt);
   gimple_set_body (current_function_decl, body);
   cfun->curr_properties = PROP_gimple_any;
-  if (flag_gdebug)
-    debug_gimple_seq (seq);
+
   return;
 }
 
