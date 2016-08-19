@@ -1,3 +1,55 @@
+2016-08-19  Prasad Ghangal  <prasad.ghangal@gmail.com>
+	
+	* cgraphunit.c (cgraph_node::assemble_thunks_and_aliases): New variable.
+	(cgraph_node::expand): Add new argument to function.
+	execute_pass_list, guard gcc_assert (TREE_ASM_WRITTEN (decl)) with 
+	condition.
+	* coretypes.h (tree_node *const_tree): New decl, add headers, new
+	variables.
+	* function.h (struct GTY()) function): Add new member to store
+	startwith pass also add new member as a flag.
+	* gimple-pretty-print.c (dump_gimple_switch): Change dumping formats.
+	(dump_gimple_label): Remove condition for DECL_NONLOCAL, flags & 
+	TDF_EH, EH_LANDING_PAD_NR. Change dumping format.
+	(dump_ssaname_info_to_file): Change passing arguments of dump_gimple_phi
+	(dump_gimple_phi): Remove condition for comment, change format of
+	dumping PHI and PHI arguments.
+	(pp_gimple_stmt_1): Remove argument of dump_gimple_phi function.
+	(dump_gimple_bb_header): Change format of dumping gimple basic block
+	header.
+	(dump_phi_nodes): Remove argument of dump_gimple_phi function.
+	(pp_cfg_jump): Remove stmt, remove condition for GIMPLE_LABEL, change 
+	dumping format of gimple basic block header.
+	(gimple_dump_bb_for_graph): Change format of dumping gimple basic block
+	* gimplify.c (gimplify_function_tree): Add condition for presence of
+	gimple body in the cfun.
+	* internal-fn.c (expand_PHI): New function.
+	* internal-fn.h (expand_PHI): Declared here.
+	* internal-fn.def: New defination for PHI.
+	* passes.c (do_per_function_toporder): Add new argument flag, add new
+	argument in callback function call.
+	(execute_one_pass): Add new function argument, add condition for 
+	skipping passes until startwith pass.
+	(execute_pass_list_1): Add new function argument, add condition to 
+	check starwith flag.
+	(execute_ipa_pass_list): New variable, add condition to check and skip
+	passes for startwith pass, pass new argument to function 
+	do_per_function_toporder.
+	* tree-pass.h (execute_one_pass): Add new argument to the function.
+	(execute_pass_list): Likewise.
+	* tree-cfg.c (lower_phi_internal_fn): New function.
+	(verify_gimple_call): Condition for passing label as arg in internal
+	function PHI.
+	(dump_function_to_file): Change format of gimple dump.
+	* tree-into-ssa.c (rewrite_add_phi_arguments): New variable, add 
+	condition for avoiding ssa name versions.
+	* tree-pretty-print.c (dump_decl_name): Change format of dumping gimple
+	labels.
+	(dump_function_header): Change format of gimple dump header
+	* tree-ssanames.c (make_ssa_name_fn): New argument, check for version
+	and assign proper version for parsed ssa names.
+	* tree-ssanames.h (make_ssa_name_fn): Add new argument to the function.
+
 2016-05-31  Kyrylo Tkachov  <kyrylo.tkachov@arm.com>
 
 	* config/aarch64/aarch64.c (aarch_macro_fusion_pair_p): Use

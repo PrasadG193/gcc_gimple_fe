@@ -346,7 +346,7 @@ replace_loop_annotate (void)
     }
 }
 
-/* Lower internal PHI function from GIMPLE FE */
+/* Lower internal PHI function from GIMPLE FE.  */
 
 static void 
 lower_phi_internal_fn ()
@@ -357,7 +357,7 @@ lower_phi_internal_fn ()
   gphi *phi_node;
   gimple *stmt;
 
-  /* After edge creation, handle __PHI function from GIMPLE FE */
+  /* After edge creation, handle __PHI function from GIMPLE FE.  */
   FOR_EACH_BB_FN (bb, cfun)
     {
       for (gsi = gsi_start_bb (bb); !gsi_end_p (gsi); gsi_next (&gsi))
@@ -366,12 +366,15 @@ lower_phi_internal_fn ()
 	  if (gimple_code (stmt) != GIMPLE_CALL)
 	    continue;
 
-	  if (gimple_call_internal_p (stmt) && gimple_call_internal_fn (stmt) == IFN_PHI)
+	  if (gimple_call_internal_p (stmt) && 
+	      gimple_call_internal_fn (stmt) == IFN_PHI)
 	    {
 	      gsi_remove (&gsi, true);
 	      unsigned int i;
 	      lhs = gimple_call_lhs (stmt);
 	      phi_node = create_phi_node (lhs, bb);
+
+	      /* Add arguments to the PHI node.  */
 	      for (i = 0; i < gimple_call_num_args (stmt); ++i)
 		{
 		  tree arg = gimple_call_arg (stmt, i);
@@ -7620,7 +7623,7 @@ dump_function_to_file (tree fndecl, FILE *file, int flags)
 	}
 
       if (!vec_safe_is_empty (fun->local_decls))
-	FOR_EACH_LOCAL_DECL (fun, ix,var)
+	FOR_EACH_LOCAL_DECL (fun, ix, var)
 	  {
 	    print_generic_decl (file, var, flags);
 	    if (flags & TDF_VERBOSE)

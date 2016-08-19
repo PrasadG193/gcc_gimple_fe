@@ -1,3 +1,29 @@
+2016-08-19  Prasad Ghangal  <prasad.ghangal@gmail.com>
+	
+	* c_parser.c: Add headers.
+	(c_parser_parse_gimple_body): New function.
+	(c_parser_gimple_compound_statement): Likewise.
+	(c_parser_gimple_label): Likewise.
+	(c_parser_gimple_expression): Likewise
+	(c_parser_gimple_binary_expression): Likewise.
+	(c_parser_gimple_unary_expression): Likewise.
+	(c_parser_gimple_postfix_expression): Likewise.
+	(c_parser_gimple_postfix_expression_after_primary): Likewise.
+	(c_parser_gimple_pass_list): Likewise.
+	(c_parser_gimple_pass_list_params): Likewise.
+	(c_parser_gimple_declaration): Likewise.
+	(c_parser_gimple_goto_stmt): Likewise.
+	(c_parser_gimple_if_stmt): Likewise.
+	(c_parser_gimple_switch_stmt): Likewise.
+	(c_parser_gimple_return_stmt): Likewise.
+	(c_finish_gimple_return): Likewise.
+	(c_parser_parse_ssa_names): Likewise.
+	(c_parser_gimple_paren_condition): Likewise.
+	(c_parser_gimple_expr_list): Likewise.
+	(c_parser_declaration_or_fndef): New decls. Call function.
+	c_parser_gimple_pass_list, set startwith passes, call
+	c_parser_parse_gimple_body.
+
 2016-05-30  Jakub Jelinek  <jakub@redhat.com>
 
 	PR c++/71349

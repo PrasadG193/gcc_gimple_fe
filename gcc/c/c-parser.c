@@ -18185,7 +18185,19 @@ c_parser_parse_gimple_body (c_parser *parser)
   return;
 }
 
-/* Parser a compound statement in gimple function body */
+/* Parse a compound statement in gimple function body. 
+   
+   gimple-statement:
+     gimple-statement
+     gimple-declaration-statement
+     gimple-if-statement
+     gimple-switch-statement
+     gimple-labeled-statement
+     gimple-expression-statement
+     gimple-goto-statement
+     gimple-phi-statement
+     gimple-return-statement
+*/
 
 static bool
 c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
@@ -18193,16 +18205,14 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
   bool return_p = false;
 
   if (!c_parser_require (parser, CPP_OPEN_BRACE, "expected %<{%>"))
-    {
       return return_p;
-    }
+
   if (c_parser_next_token_is (parser, CPP_CLOSE_BRACE))
     {
       c_parser_consume_token (parser);
       goto out;
     }
 
-  /* We must now have at least one statement, label or declaration.  */
 
   if (c_parser_next_token_is (parser, CPP_CLOSE_BRACE))
     {
@@ -18210,8 +18220,10 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
       c_parser_consume_token (parser);
       goto out;
     }
+
   while (c_parser_next_token_is_not (parser, CPP_CLOSE_BRACE))
     {
+
       if (parser->error)
 	{
 	  c_parser_skip_until_found (parser, CPP_CLOSE_BRACE, NULL);
@@ -18220,18 +18232,17 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 
       if (c_parser_next_token_is (parser, CPP_NAME) 
 	  && c_parser_peek_2nd_token (parser)->type == CPP_COLON)
-	{
 	  c_parser_gimple_label (parser, seq);
-	}
+
       else if (c_parser_next_tokens_start_declaration (parser))
-	{
 	  c_parser_gimple_declaration (parser);
-	}
+
       else if (c_parser_next_token_is (parser, CPP_EOF))
 	{
 	  c_parser_error (parser, "expected declaration or statement");
 	  goto out;
 	}
+
       else
 	{
 	  switch (c_parser_peek_token (parser)->type)
@@ -18285,7 +18296,16 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
   return return_p;
 }
 
-/* Parse a gimple expression */
+/* Parse a gimple expression. 
+   
+   gimple-expression:
+     gimple-unary-expression
+     gimple-call-statement
+     gimple-binary-expression
+     gimple-assign-expression
+     gimple-cast-expression
+
+*/
 
 static void
 c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
@@ -18295,6 +18315,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
   enum tree_code subcode = NOP_EXPR;
   tree save_expr;
   location_t loc, exp_location;
+
   lhs = c_parser_gimple_unary_expression (parser);
   
   if (c_parser_next_token_is (parser, CPP_EQ))
@@ -18304,6 +18325,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 
   loc = EXPR_LOCATION (lhs.value);
 
+  /* gimple call expression. */
   if (c_parser_next_token_is (parser, CPP_SEMICOLON) && 
       TREE_CODE (lhs.value) == CALL_EXPR)
     {
@@ -18314,6 +18336,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       return;
     }
 
+  /* cast expression.  */
   if (c_parser_next_token_is (parser, CPP_OPEN_PAREN)
       && c_token_starts_typename (c_parser_peek_2nd_token (parser)))
     {
@@ -18335,6 +18358,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 	rhs.value = fold_convert_loc (loc, TREE_TYPE (lhs.value), rhs.value);
     }
 
+  /* pointer expression.  */
   if (TREE_CODE (lhs.value) == INDIRECT_REF)
     {
       save_expr = lhs.value;
@@ -18368,6 +18392,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       return;
     }
 
+  /* gimple PHI expression.  */
   if (c_parser_next_token_is_keyword (parser, RID_PHI))
     {
       c_parser_consume_token (parser);
@@ -18378,7 +18403,6 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 	}
 
       gcall *call_stmt;
-      /* Gimplify internal functions. */
       tree arg = NULL_TREE;
       vec<tree> vargs = vNULL;
 
@@ -18412,6 +18436,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       c_parser_skip_until_found (parser, CPP_CLOSE_PAREN,
 				 "expected %<)%>");
 
+      /* build internal function for PHI. */
       call_stmt = gimple_build_call_internal_vec (IFN_PHI, vargs);
       gimple_call_set_lhs (call_stmt, lhs.value);
       gimple_set_location (call_stmt, UNKNOWN_LOCATION);
@@ -18419,7 +18444,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       return;
     }
 
-
+  /* gimple call with lhs. */
   if (c_parser_next_token_is (parser, CPP_NAME) && 
       c_parser_peek_2nd_token (parser)->type == CPP_OPEN_PAREN &&
       lookup_name (c_parser_peek_token (parser)->value))
@@ -18451,7 +18476,47 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
   return;
 }
 
-/* Parse gimple binary expr */
+/* Parse gimple binary expr. 
+ 
+   gimple-multiplicative-expression:
+     gimple-unary-expression * gimple-unary-expression
+     gimple-unary-expression / gimple-unary-expression
+     gimple-unary-expression % gimple-unary-expression
+
+   gimple-additive-expression:
+     gimple-unary-expression + gimple-unary-expression
+     gimple-unary-expression - gimple-unary-expression
+
+   gimple-shift-expression:
+     gimple-unary-expression << gimple-unary-expression
+     gimple-unary-expression >> gimple-unary-expression
+
+   gimple-relational-expression:
+     gimple-unary-expression < gimple-unary-expression
+     gimple-unary-expression > gimple-unary-expression
+     gimple-unary-expression <= gimple-unary-expression
+     gimple-unary-expression >= gimple-unary-expression
+
+   gimple-equality-expression:
+     gimple-unary-expression == gimple-unary-expression
+     gimple-unary-expression != gimple-unary-expression
+
+   gimple-AND-expression:
+     gimple-unary-expression & gimple-unary-expression
+
+   gimple-exclusive-OR-expression:
+     gimple-unary-expression ^ gimple-unary-expression
+
+   gimple-inclusive-OR-expression:
+     gimple-unary-expression | gimple-unary-expression
+
+   gimple-logical-AND-expression:
+     gimple-unary-expression && gimple-unary-expression
+
+   gimple-logical-OR-expression:
+     gimple-unary-expression || gimple-unary-expression
+
+*/
 
 static c_expr
 c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
@@ -18644,7 +18709,15 @@ out:
 
 }
 
-/* Parse gimple unary expression */
+/* Parse gimple unary expression. 
+
+   gimple-unary-expression:
+     gimple-postfix-expression
+     unary-operator cast-expression
+
+   unary-operator: one of
+     & * + - ~ !
+*/
 
 static c_expr
 c_parser_gimple_unary_expression (c_parser *parser)
@@ -18713,7 +18786,7 @@ c_parser_gimple_unary_expression (c_parser *parser)
     }
 }
 
-/* Parse ssa names */
+/* Parse gimple ssa names.  */
 
 static c_expr
 c_parser_parse_ssa_names (c_parser *parser)
@@ -18723,9 +18796,13 @@ c_parser_parse_ssa_names (c_parser *parser)
   char *var_name, *var_version, *token;
   ret.original_code = ERROR_MARK;
   ret.original_type = NULL;
+
+  /* ssa token string.  */
   const char *ssa_token = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
   token = new char [strlen (ssa_token)];
   strcpy (token, ssa_token);
+
+  /* seperate var name and version.  */
   var_version = strrchr (token, '_');
   if (var_version)
     {
@@ -18733,6 +18810,8 @@ c_parser_parse_ssa_names (c_parser *parser)
       memcpy (var_name, token, var_version - token);
       var_name[var_version - token] = '\0';
       id = get_identifier (var_name);
+
+      /* lookup for parent decl.  */
       if (lookup_name (id))
 	{
 	  var_version++;
@@ -18744,11 +18823,14 @@ c_parser_parse_ssa_names (c_parser *parser)
 	      if (version < num_ssa_names)
 		ret.value = ssa_name (version);
 	      if (!ret.value)
-		ret.value = make_ssa_name_fn (cfun, lookup_name (id), gimple_build_nop (), version);
+		ret.value = make_ssa_name_fn (cfun, lookup_name (id), gimple_build_nop (), 
+						version);
 	      c_parser_consume_token (parser);
 	    }
 	}
     }
+
+  /* for default defination ssa names.  */
   if (c_parser_next_token_is (parser, CPP_OPEN_PAREN))
     {
       c_parser_consume_token (parser);
@@ -18763,7 +18845,23 @@ c_parser_parse_ssa_names (c_parser *parser)
   return ret;
 }
 
-/*Parser gimple postfix expression*/
+/* Parse gimple postfix expression. 
+
+   gimple-postfix-expression:
+     gimple-primary-expression
+     gimple-primary-xpression [ gimple-primary-expression ]
+     gimple-primary-expression ( gimple-argument-expression-list[opt] )
+
+   gimple-argument-expression-list:
+     gimple-unary-expression
+     gimple-argument-expression-list , gimple-unary-expression
+
+   gimple-primary-expression:
+     identifier
+     constant
+     string-literal
+
+*/
 
 static struct c_expr 
 c_parser_gimple_postfix_expression (c_parser *parser)
@@ -18840,7 +18938,8 @@ c_parser_gimple_postfix_expression (c_parser *parser)
     (parser, EXPR_LOC_OR_LOC (expr.value, loc), expr);
 }
 
-/* Parse postfix expression after the primary literal */
+/* Parse a gimple postfix expression after the initial primary or compound
+   literal.  */
 
 static struct c_expr
 c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
@@ -18882,7 +18981,7 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
 	}
     case CPP_OPEN_PAREN:
 	{
-	  /* Function call.  */
+	  /* Function call */
 	  c_parser_consume_token (parser);
 	  for (i = 0; i < 3; i++)
 	    {
@@ -18944,7 +19043,13 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
   return expr;
 }
 
-/* Parse expression list */
+/* Parse expression list. 
+
+   gimple-expr-list:
+     gimple-unary-expression
+     gimple-expr-list , gimple-unary-expression
+
+ */
 
 static vec<tree, va_gc> *
 c_parser_gimple_expr_list (c_parser *parser, bool convert_p,
@@ -19019,7 +19124,14 @@ c_parser_gimple_expr_list (c_parser *parser, bool convert_p,
   return ret;
 }
 
-/* Parse gimple label */
+/* Parse gimple label. 
+   
+   gimple-label:
+     identifier : 
+     case constant-expression :
+     default : 
+
+*/
 
 static void 
 c_parser_gimple_label (c_parser *parser, gimple_seq *seq)
@@ -19036,7 +19148,11 @@ c_parser_gimple_label (c_parser *parser, gimple_seq *seq)
   return;
 }
 
-/* Parse gimple pass list */
+/* Parse gimple pass list. 
+ 
+   gimple-pass-list:
+     startwith("pass-name")
+ */
 
 static void 
 c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass, bool *startwith_p)
@@ -19060,6 +19176,7 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass, bool *startwith_p)
 	  *pass = c_parser_gimple_pass_list_params (parser, pass);
 	  if (!(*pass))
 	    return;
+
 	  *startwith_p = true;
 	  if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
 	    return;
@@ -19079,7 +19196,7 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass, bool *startwith_p)
   return;
 }
 
-/* Support function for c_parser_gimple_pass_list */
+/* Support function for c_parser_gimple_pass_list.  */
 
 static opt_pass *
 c_parser_gimple_pass_list_params (c_parser *parser, opt_pass **pass)
@@ -19139,7 +19256,43 @@ c_parser_gimple_pass_list_params (c_parser *parser, opt_pass **pass)
   return pass_start;
 }
 
-/* Parse gimple local declaration */
+/* Parse gimple local declaration. 
+ 
+   declaration-specifiers:
+     storage-class-specifier declaration-specifiers[opt]
+     type-specifier declaration-specifiers[opt]
+     type-qualifier declaration-specifiers[opt]
+     function-specifier declaration-specifiers[opt]
+     alignment-specifier declaration-specifiers[opt]
+
+   storage-class-specifier:
+     typedef
+     extern
+     static
+     auto
+     register
+
+   type-specifier:
+     void
+     char
+     short
+     int
+     long
+     float
+     double
+     signed
+     unsigned
+     _Bool
+     _Complex
+
+   type-qualifier:
+     const
+     restrict
+     volatile
+     address-space-qualifier
+     _Atomic
+
+ */
 
 static void
 c_parser_gimple_declaration (c_parser *parser)
@@ -19197,6 +19350,8 @@ c_parser_gimple_declaration (c_parser *parser)
     }
 }
 
+/* Parse gimple goto statement.  */
+
 static void
 c_parser_gimple_goto_stmt (location_t loc, tree label, gimple_seq *seq)
 {
@@ -19206,7 +19361,9 @@ c_parser_gimple_goto_stmt (location_t loc, tree label, gimple_seq *seq)
   return;
 }
 
-/* Parse a parenthesized condition */
+/* Parse a parenthesized condition. 
+   gimple-condition:
+     ( gimple-binary-expression )    */
 
 static tree
 c_parser_gimple_paren_condition (c_parser *parser)
@@ -19223,7 +19380,13 @@ c_parser_gimple_paren_condition (c_parser *parser)
   return cond;
 }
 
-/* Parse gimple if-else statement */
+/* Parse gimple if-else statement. 
+ 
+   if-statement:
+     if ( gimple-binary-expression ) gimple-goto-statement
+     if ( gimple-binary-expression ) gimple-goto-statement \
+					else gimple-goto-statement   
+ */
 
 static void 
 c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
@@ -19276,7 +19439,15 @@ c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
   gimple_seq_add_stmt (seq, gimple_build_cond_from_tree (cond, t_label, f_label));
 }
 
-/* Parser gimple switch-statement */
+/* Parse gimple switch-statement. 
+ 
+   gimple-switch-statement:
+     switch (gimple-unary-expression) gimple-case-statement
+
+   gimple-case-statement:
+     gimple-case-statement
+     gimple-label-statement : gimple-goto-statment
+*/
 
 static void
 c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
@@ -19389,7 +19560,7 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
   labels.release();
 }
 
-/* Parse gimple return statement */
+/* Parse gimple return statement.  */
 
 static void 
 c_parser_gimple_return_stmt (c_parser *parser, gimple_seq *seq)
@@ -19413,7 +19584,7 @@ c_parser_gimple_return_stmt (c_parser *parser, gimple_seq *seq)
     }
 }
 
-/* Support function for c_parser_gimple_return_stmt */
+/* Support function for c_parser_gimple_return_stmt.  */
 
 static void 
 c_finish_gimple_return (location_t loc, tree retval)

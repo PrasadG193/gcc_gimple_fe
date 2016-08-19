@@ -265,6 +265,7 @@ make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, unsigned int vers
 	      || TREE_CODE (var) == RESULT_DECL
 	      || (TYPE_P (var) && is_gimple_reg_type (var)));
 
+  /* parsing ssa names with versions.	*/
   if (version != 0)
     {
       t = make_node (SSA_NAME);

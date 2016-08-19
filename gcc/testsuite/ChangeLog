@@ -1,3 +1,14 @@
+2016-08-19  Prasad Ghangal  <prasad.ghangal@gmail.com>
+
+	* gcc.dg/gimplefe-1.c: New testcase.
+	* gcc.dg/gimplefe-2.c: Likewise.
+	* gcc.dg/gimplefe-3.c: Likewise.
+	* gcc.dg/gimplefe-4.c: Likewise.
+	* gcc.dg/gimplefe-5.c: Likewise.
+	* gcc.dg/gimplefe-6.c: Likewise.
+	* gcc.dg/gimplefe-7.c: Likewise.
+	* gcc.dg/gimplefe-9.c: Likewise.
+
 2016-05-31  Richard Biener  <rguenther@suse.de>
 
 	PR tree-optimization/71352
