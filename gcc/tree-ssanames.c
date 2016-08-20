@@ -255,7 +255,8 @@ flush_ssaname_freelist (void)
    used without a preceding definition).  */
 
 tree
-make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, unsigned int version)
+make_ssa_name_fn (struct function *fn, tree var, gimple *stmt, 
+		  unsigned int version)
 {
   tree t;
   use_operand_p imm;
