@@ -18147,26 +18147,20 @@ c_parser_array_notation (location_t loc, c_parser *parser, tree initial_index,
 void 
 c_parser_parse_gimple_body (c_parser *parser)
 {
-  bool return_p = false;
-  gimple_seq seq;
-  gimple_seq body;
+  gimple_seq seq = NULL;
+  gimple_seq body = NULL;
   tree stmt = push_stmt_list ();
   push_scope ();
   location_t loc1 = c_parser_peek_token (parser)->location;
-  seq = NULL;
-  body = NULL;
-  init_tree_ssa (cfun);
-  return_p = c_parser_gimple_compound_statement (parser, &seq);
 
-  if (!return_p)
+  init_tree_ssa (cfun);
+  if (!c_parser_gimple_compound_statement (parser, &seq))
     {
-      gimple *ret;
-      ret = gimple_build_return (NULL);
+      gimple *ret = gimple_build_return (NULL);
       gimple_seq_add_stmt (&seq, ret);
     }
 
-  tree block = NULL;
-  block = pop_scope ();
+  tree block = pop_scope ();
   stmt = pop_stmt_list (stmt);
   stmt = c_build_bind_expr (loc1, block, stmt);
   
@@ -18205,12 +18199,12 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
   bool return_p = false;
 
   if (!c_parser_require (parser, CPP_OPEN_BRACE, "expected %<{%>"))
-      return return_p;
+      return false;
 
   if (c_parser_next_token_is (parser, CPP_CLOSE_BRACE))
     {
       c_parser_consume_token (parser);
-      goto out;
+      return false;
     }
 
 
@@ -18218,7 +18212,7 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
     {
       c_parser_error (parser, "expected declaration or statement");
       c_parser_consume_token (parser);
-      goto out;
+      return false;
     }
 
   while (c_parser_next_token_is_not (parser, CPP_CLOSE_BRACE))
@@ -18227,7 +18221,7 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
       if (parser->error)
 	{
 	  c_parser_skip_until_found (parser, CPP_CLOSE_BRACE, NULL);
-	  goto out;
+	  return return_p;
 	}
 
       if (c_parser_next_token_is (parser, CPP_NAME) 
@@ -18240,7 +18234,7 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
       else if (c_parser_next_token_is (parser, CPP_EOF))
 	{
 	  c_parser_error (parser, "expected declaration or statement");
-	  goto out;
+	  return return_p;
 	}
 
       else
@@ -18268,7 +18262,7 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 			  c_parser_consume_token (parser);
 			  if (!c_parser_require (parser, CPP_SEMICOLON, 
 						 "expected %<;%>"))
-			    goto out;
+			    return return_p;
 			}
 		    }
 		  break;
@@ -18277,7 +18271,7 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 		  c_parser_gimple_return_stmt (parser, seq);
 		  if (!c_parser_require (parser, CPP_SEMICOLON, 
 					 "expected %<;%>"))
-		    goto out;
+		    return return_p;
 		  break;
 		default:
 		  goto expr_stmt;
@@ -18290,13 +18284,11 @@ c_parser_gimple_compound_statement (c_parser *parser, gimple_seq *seq)
 	    expr_stmt:
 	      c_parser_gimple_expression (parser, seq);
 	      if (!c_parser_require (parser, CPP_SEMICOLON, "expected %<;%>"))
-		goto out;
+		return return_p;
 	    }
 	}
     }
   c_parser_consume_token (parser);
-
-  out:
   return return_p;
 }
 
@@ -18315,10 +18307,11 @@ static void
 c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 {
   c_expr lhs, rhs;
-  gimple *assign; 
+  gimple *assign = NULL; 
   enum tree_code subcode = NOP_EXPR;
-  tree save_expr;
-  location_t loc, exp_location;
+  location_t loc;
+  tree arg = NULL_TREE;
+  auto_vec<tree> vargs;
 
   lhs = c_parser_gimple_unary_expression (parser);
   
@@ -18366,7 +18359,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
   /* pointer expression.  */
   if (TREE_CODE (lhs.value) == INDIRECT_REF)
     {
-      save_expr = lhs.value;
+      tree save_expr = lhs.value;
       bool volatilep = TREE_THIS_VOLATILE (lhs.value);
       bool notrap = TREE_THIS_NOTRAP (lhs.value);
       tree saved_ptr_type = TREE_TYPE (TREE_OPERAND (lhs.value, 0));
@@ -18407,10 +18400,6 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 	  return;
 	}
 
-      gcall *call_stmt;
-      tree arg = NULL_TREE;
-      vec<tree> vargs = vNULL;
-
       if (c_parser_next_token_is (parser, CPP_OPEN_PAREN))
 	c_parser_consume_token (parser);
       
@@ -18442,7 +18431,7 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 				 "expected %<)%>");
 
       /* build internal function for PHI. */
-      call_stmt = gimple_build_call_internal_vec (IFN_PHI, vargs);
+      gcall *call_stmt = gimple_build_call_internal_vec (IFN_PHI, vargs);
       gimple_call_set_lhs (call_stmt, lhs.value);
       gimple_set_location (call_stmt, UNKNOWN_LOCATION);
       gimple_seq_add_stmt (seq, call_stmt);
@@ -18454,16 +18443,15 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
       c_parser_peek_2nd_token (parser)->type == CPP_OPEN_PAREN &&
       lookup_name (c_parser_peek_token (parser)->value))
     {
-      gimple *call;
       rhs = c_parser_gimple_unary_expression (parser);
-      call = gimple_build_call_from_tree (rhs.value);
+      gimple *call = gimple_build_call_from_tree (rhs.value);
       gimple_call_set_lhs (call, lhs.value);
       gimple_seq_add_stmt (seq, call);
       gimple_set_location (call, loc);
       return;
     }
 
-  exp_location = c_parser_peek_token (parser)->location;
+  location_t exp_location = c_parser_peek_token (parser)->location;
   rhs = c_parser_gimple_binary_expression (parser, &subcode);
   rhs = convert_lvalue_to_rvalue (exp_location, rhs, true, true);
 
@@ -18527,13 +18515,9 @@ c_parser_gimple_expression (c_parser *parser, gimple_seq *seq)
 static c_expr
 c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
 {
-  tree omp_atomic_lhs = NULL;
   struct {
     /* The expression at this stack level.  */
     struct c_expr expr;
-    /* The precedence of the operator on its left, PREC_NONE at the
-       bottom of the stack.  */
-    enum c_parser_prec prec;
     /* The operation on its left.  */
     enum tree_code op;
     /* The source location of this operation.  */
@@ -18563,16 +18547,12 @@ c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
     stack[sp].expr							      \
       = convert_lvalue_to_rvalue (stack[sp].loc,			      \
 				  stack[sp].expr, true, true);		      \
-    if (__builtin_expect (omp_atomic_lhs != NULL_TREE, 0) && sp == 1	      \
-	&& c_parser_peek_token (parser)->type == CPP_SEMICOLON		      \
-	&& ((1 << stack[sp].prec)					      \
-	    & ((1 << PREC_BITOR) | (1 << PREC_BITXOR) | (1 << PREC_BITAND)    \
+    if (sp == 1	&& c_parser_peek_token (parser)->type == CPP_SEMICOLON	      \
+	&& (((1 << PREC_BITOR) | (1 << PREC_BITXOR) | (1 << PREC_BITAND)      \
 	       | (1 << PREC_SHIFT) | (1 << PREC_ADD) | (1 << PREC_MULT)))     \
 	&& stack[sp].op != TRUNC_MOD_EXPR				      \
 	&& stack[0].expr.value != error_mark_node			      \
-	&& stack[1].expr.value != error_mark_node			      \
-	&& (c_tree_equal (stack[0].expr.value, omp_atomic_lhs)		      \
-	    || c_tree_equal (stack[1].expr.value, omp_atomic_lhs)))	      \
+	&& stack[1].expr.value != error_mark_node)			      \
       stack[0].expr.value						      \
 	= build2 (stack[1].op, TREE_TYPE (stack[0].expr.value),		      \
 		  stack[0].expr.value, stack[1].expr.value);		      \
@@ -18585,84 +18565,64 @@ c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
   } while (0)
   stack[0].loc = c_parser_peek_token (parser)->location;
   stack[0].expr = c_parser_gimple_unary_expression (parser);
-  stack[0].prec = PREC_NONE;
   sp = 0;
-  enum c_parser_prec oprec;
   source_range src_range;
   if (parser->error)
     goto out;
   switch (c_parser_peek_token (parser)->type)
     {
     case CPP_MULT:
-      oprec = PREC_MULT;
       *subcode = MULT_EXPR;
       break;
     case CPP_DIV:
-      oprec = PREC_MULT;
       *subcode = TRUNC_DIV_EXPR;
       break;
     case CPP_MOD:
-      oprec = PREC_MULT;
       *subcode = TRUNC_MOD_EXPR;
       break;
     case CPP_PLUS:
-      oprec = PREC_ADD;
       *subcode = PLUS_EXPR;
       break;
     case CPP_MINUS:
-      oprec = PREC_ADD;
       *subcode = MINUS_EXPR;
       break;
     case CPP_LSHIFT:
-      oprec = PREC_SHIFT;
       *subcode = LSHIFT_EXPR;
       break;
     case CPP_RSHIFT:
-      oprec = PREC_SHIFT;
       *subcode = RSHIFT_EXPR;
       break;
     case CPP_LESS:
-      oprec = PREC_REL;
       *subcode = LT_EXPR;
       break;
     case CPP_GREATER:
-      oprec = PREC_REL;
       *subcode = GT_EXPR;
       break;
     case CPP_LESS_EQ:
-      oprec = PREC_REL;
       *subcode = LE_EXPR;
       break;
     case CPP_GREATER_EQ:
-      oprec = PREC_REL;
       *subcode = GE_EXPR;
       break;
     case CPP_EQ_EQ:
-      oprec = PREC_EQ;
       *subcode = EQ_EXPR;
       break;
     case CPP_NOT_EQ:
-      oprec = PREC_EQ;
       *subcode = NE_EXPR;
       break;
     case CPP_AND:
-      oprec = PREC_BITAND;
       *subcode = BIT_AND_EXPR;
       break;
     case CPP_XOR:
-      oprec = PREC_BITXOR;
       *subcode = BIT_XOR_EXPR;
       break;
     case CPP_OR:
-      oprec = PREC_BITOR;
       *subcode = BIT_IOR_EXPR;
       break;
     case CPP_AND_AND:
-      oprec = PREC_LOGAND;
       *subcode = TRUTH_ANDIF_EXPR;
       break;
     case CPP_OR_OR:
-      oprec = PREC_LOGOR;
       *subcode = TRUTH_ORIF_EXPR;
       break;
     default:
@@ -18672,8 +18632,6 @@ c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
       goto out;
     }
   binary_loc = c_parser_peek_token (parser)->location;
-  while (oprec <= stack[sp].prec)
-    POP;
   c_parser_consume_token (parser);
   switch (*subcode)
     {
@@ -18705,7 +18663,6 @@ c_parser_gimple_binary_expression (c_parser *parser, enum tree_code *subcode)
   sp++;
   stack[sp].loc = binary_loc;
   stack[sp].expr = c_parser_gimple_unary_expression (parser);
-  stack[sp].prec = oprec;
   stack[sp].op = *subcode;
 out:
   while (sp > 0)
@@ -18761,10 +18718,6 @@ c_parser_gimple_unary_expression (c_parser *parser)
 	return ret;
       }
     case CPP_PLUS:
-      if (!c_dialect_objc () && !in_system_header_at (input_location))
-	warning_at (op_loc,
-		    OPT_Wtraditional,
-		    "traditional C rejects the unary plus operator");
       c_parser_consume_token (parser);
       exp_loc = c_parser_peek_token (parser)->location;
       op = c_parser_cast_expression (parser, NULL);
@@ -18800,13 +18753,12 @@ c_parser_parse_ssa_names (c_parser *parser)
 {
   tree id = NULL_TREE;
   c_expr ret;
-  char *var_name, *var_version, *token;
+  char *var_name = NULL, *var_version = NULL, *token = NULL;
   ret.original_code = ERROR_MARK;
   ret.original_type = NULL;
 
   /* ssa token string.  */
-  const char *ssa_token = NULL;
-  ssa_token = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
+  const char *ssa_token = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
   token = new char [strlen (ssa_token)];
   strcpy (token, ssa_token);
 
@@ -18849,8 +18801,11 @@ c_parser_parse_ssa_names (c_parser *parser)
 	  c_parser_consume_token (parser);
 	}
       if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
-	return ret;
+	goto out;
     }
+  out:
+  free (var_name);
+  free (token);
   return ret;
 }
 
@@ -18876,7 +18831,7 @@ static struct c_expr
 c_parser_gimple_postfix_expression (c_parser *parser)
 {
   struct c_expr expr;
-  location_t loc = c_parser_peek_token (parser)->location;;
+  location_t loc = c_parser_peek_token (parser)->location;
   source_range tok_range = c_parser_peek_token (parser)->get_range ();
   expr.original_code = ERROR_MARK;
   expr.original_type = NULL;
@@ -18910,13 +18865,6 @@ c_parser_gimple_postfix_expression (c_parser *parser)
       expr.value = c_parser_peek_token (parser)->value;
       set_c_expr_source_range (&expr, tok_range);
       expr.original_code = STRING_CST;
-      c_parser_consume_token (parser);
-      break;
-    case CPP_OBJC_STRING:
-      gcc_assert (c_dialect_objc ());
-      expr.value
-	= objc_build_string_object (c_parser_peek_token (parser)->value);
-      set_c_expr_source_range (&expr, tok_range);
       c_parser_consume_token (parser);
       break;
     case CPP_NAME:
@@ -18956,7 +18904,6 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
 						  struct c_expr expr)
 {
   struct c_expr orig_expr;
-  tree idx;
   location_t sizeof_arg_loc[3];
   tree sizeof_arg[3];
   unsigned int literal_zero_mask;
@@ -18974,7 +18921,7 @@ c_parser_gimple_postfix_expression_after_primary (c_parser *parser,
     case CPP_OPEN_SQUARE:
 	{
 	  c_parser_consume_token (parser);
-	  idx = c_parser_gimple_unary_expression (parser).value;
+	  tree idx = c_parser_gimple_unary_expression (parser).value;
 
 	  if (!c_parser_require (parser, CPP_CLOSE_SQUARE, "expected %<]%>"))
 	    break;
@@ -19088,9 +19035,9 @@ c_parser_gimple_expr_list (c_parser *parser, bool convert_p,
   expr = c_parser_gimple_unary_expression (parser);
   if (convert_p)
     expr = convert_lvalue_to_rvalue (loc, expr, true, true);
-  ret->quick_push (expr.value);
+  vec_safe_push (ret, expr.value);
   if (orig_types)
-    orig_types->quick_push (expr.original_type);
+    vec_safe_push (orig_types, expr.original_type);
   if (locations)
     locations->safe_push (loc);
   if (sizeof_arg != NULL
@@ -19145,14 +19092,13 @@ c_parser_gimple_expr_list (c_parser *parser, bool convert_p,
 static void 
 c_parser_gimple_label (c_parser *parser, gimple_seq *seq)
 {
-  tree label;
   tree name = c_parser_peek_token (parser)->value;
   location_t loc1 = c_parser_peek_token (parser)->location;
   gcc_assert (c_parser_next_token_is (parser, CPP_NAME));
   c_parser_consume_token (parser);
   gcc_assert (c_parser_next_token_is (parser, CPP_COLON));
   c_parser_consume_token (parser);
-  label = define_label (loc1, name);
+  tree label = define_label (loc1, name);
   gimple_seq_add_stmt (seq, gimple_build_label (label));
   return;
 }
@@ -19179,8 +19125,7 @@ c_parser_gimple_pass_list (c_parser *parser, opt_pass **pass,
 
   if (c_parser_next_token_is (parser, CPP_NAME))
     {
-      const char *op = NULL;
-      op = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
+      const char *op = IDENTIFIER_POINTER (c_parser_peek_token (parser)->value);
       c_parser_consume_token (parser);
       if (!strcmp (op, "startwith"))
 	{
@@ -19313,9 +19258,8 @@ c_parser_gimple_pass_list_params (c_parser *parser, opt_pass **pass)
 static void
 c_parser_gimple_declaration (c_parser *parser)
 {
-  struct c_declspecs *specs;
   struct c_declarator *declarator;
-  specs = build_null_declspecs ();
+  struct c_declspecs *specs = build_null_declspecs ();
   c_parser_declspecs (parser, specs, true, true, true, 
 		      true, true, cla_nonabstract_decl);
   finish_declspecs (specs);
@@ -19348,11 +19292,10 @@ c_parser_gimple_declaration (c_parser *parser)
 
   if (c_parser_next_token_is (parser, CPP_SEMICOLON))
     {
-      tree decl;
       tree postfix_attrs = NULL_TREE;
       tree all_prefix_attrs = specs->attrs;
       specs->attrs = NULL;
-      decl = start_decl (declarator, specs, false, 
+      tree decl = start_decl (declarator, specs, false, 
 			 chainon (postfix_attrs, all_prefix_attrs));
       if (decl)
 	{
@@ -19385,12 +19328,11 @@ c_parser_gimple_goto_stmt (location_t loc, tree label, gimple_seq *seq)
 static tree
 c_parser_gimple_paren_condition (c_parser *parser)
 {
-  tree cond;
   enum tree_code subcode = NOP_EXPR;
   location_t loc = c_parser_peek_token (parser)->location;
   if (!c_parser_require (parser, CPP_OPEN_PAREN, "expected %<(%>"))
     return error_mark_node;
-  cond = c_parser_gimple_binary_expression (parser, &subcode).value;
+  tree cond = c_parser_gimple_binary_expression (parser, &subcode).value;
   cond = c_objc_common_truthvalue_conversion (loc, cond);
   if (!c_parser_require (parser, CPP_CLOSE_PAREN, "expected %<)%>"))
     return error_mark_node;
@@ -19408,10 +19350,10 @@ c_parser_gimple_paren_condition (c_parser *parser)
 static void 
 c_parser_gimple_if_stmt (c_parser *parser, gimple_seq *seq)
 {
-  tree cond, t_label, f_label, label;
+  tree t_label, f_label, label;
   location_t loc;
   c_parser_consume_token (parser);
-  cond = c_parser_gimple_paren_condition (parser);
+  tree cond = c_parser_gimple_paren_condition (parser);
 
   if (c_parser_next_token_is_keyword (parser, RID_GOTO))
     {
@@ -19472,7 +19414,7 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 {
   c_expr cond_expr;
   tree case_label, label;
-  vec<tree> labels = vNULL;
+  auto_vec<tree> labels;
   tree default_label = NULL_TREE;
   gimple_seq switch_body = NULL;
   location_t loc;
@@ -19551,7 +19493,7 @@ c_parser_gimple_switch_stmt (c_parser *parser, gimple_seq *seq)
 	      break;
 	    case RID_GOTO:
 		{
-		  location_t loc = c_parser_peek_token (parser)->location;
+		  loc = c_parser_peek_token (parser)->location;
 		  c_parser_consume_token (parser);
 		  if (c_parser_next_token_is (parser, CPP_NAME))
 		    {
@@ -19632,22 +19574,6 @@ c_finish_gimple_return (location_t loc, tree retval)
   if (!retval)
     {
       current_function_returns_null = 1;
-      if ((warn_return_type || flag_isoc99)
-	  && valtype != 0 && TREE_CODE (valtype) != VOID_TYPE)
-	{
-	  bool warned_here;
-	  if (flag_isoc99)
-	    warned_here = pedwarn
-	      (loc, 0,
-	       "%<return%> with no value, in function returning non-void");
-	  else
-	    warned_here = warning_at
-	      (loc, OPT_Wreturn_type,
-	       "%<return%> with no value, in function returning non-void");
-	  if (warned_here)
-	    inform (DECL_SOURCE_LOCATION (current_function_decl),
-		    "declared here");
-	}
     }
   else if (valtype == 0 || TREE_CODE (valtype) == VOID_TYPE)
     {
