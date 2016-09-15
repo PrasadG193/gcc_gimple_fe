@@ -904,7 +904,7 @@ static void
 dump_gimple_label (pretty_printer *buffer, glabel *gs, int spc, int flags)
 {
   tree label = gimple_label_label (gs);
-  if (flags && TDF_RAW)
+  if (flags & TDF_RAW)
     dump_gimple_fmt (buffer, spc, flags, "%T", label);
   else
     dump_generic_node (buffer, label, spc, flags, false);
