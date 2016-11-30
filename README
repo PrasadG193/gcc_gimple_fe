@@ -1,8 +1,10 @@
-**Project is moved to gcc.gnu.org/git at remotes/origin/gimplefe**
-To clone enter: git clone git://gcc.gnu.org/git/gcc.git -b gimplefe
-*Or visit https://gcc.gnu.org/wiki/GitMirror*
+Project is moved to gcc.gnu.org/git at remotes/origin/gimplefe
 
-**GIMPLE FE Abstract**
+To clone enter: git clone git://gcc.gnu.org/git/gcc.git -b gimplefe
+Or visit https://gcc.gnu.org/wiki/GitMirror
+
+
+GIMPLE FE Abstract
   The purpose of this project is to develop a tool which will ease the process of unit testing in gcc.
 Writing a test-case in C to generate the required GIMPLE form for testing a pass is hard, so its nice to
 have a front end through which we can directly feed input to the pass instead to going through C route.
